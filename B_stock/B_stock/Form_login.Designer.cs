@@ -1,6 +1,6 @@
 ﻿namespace B_stock
 {
-    partial class Form1
+    partial class Form_login
     {
         /// <summary>
         /// 必需的设计器变量。

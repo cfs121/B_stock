@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace B_stock
 {
-    public partial class Form1 : Form
+    public partial class Form_login : Form
     {
-        public Form1()
+        public Form_login()
         {
             InitializeComponent();
         }
