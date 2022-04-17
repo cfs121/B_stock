@@ -32,5 +32,23 @@ namespace B_stock
         {
             InitializeComponent();
         }
+
+        private void 入库端ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_intake form_Intake = new Form_intake();
+            Showform(form_Intake);
+        }
+
+        private void 出库端ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_output form_Output = new Form_output();
+            Showform(form_Output);
+        }
+
+        private void 确认端ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_cheek form_Cheek = new Form_cheek();
+            Showform(form_Cheek);
+        }
     }
 }

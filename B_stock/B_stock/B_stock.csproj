@@ -109,5 +109,15 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MySQL\MySQL.csproj">
+      <Project>{b575ff3b-4ce6-4061-acd8-cacd595cd2dd}</Project>
+      <Name>MySQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Parameter\Parameter.csproj">
+      <Project>{1b771ef4-2b65-47ae-995f-d477c86fa010}</Project>
+      <Name>Parameter</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
