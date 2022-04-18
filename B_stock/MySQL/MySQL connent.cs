@@ -57,7 +57,7 @@ namespace MySQL
         /// <returns>图形</returns>
         public int log_in_cheek(string Account, string Password, ref Dictionary<string, string> value)
         {
-            string mysqlStr = string.Format("select Password,Emp_number,Name,Level from operator_table where Account_number='{0}'", Account);
+            string mysqlStr = string.Format("select Password,Emp_number,Name,Level from operator_account where Account_number='{0}'", Account);
 
             GetConnection();//打开通讯通道
             value = new Dictionary<string, string>();
@@ -69,13 +69,14 @@ namespace MySQL
 
                 if (mysqldr.Read() == true)
                 {
-                    //赋值操作员的一些具体信息
-                    value.Add("Name", mysqldr[2].ToString());
-                    value.Add("Emp_number", mysqldr[1].ToString());
-                    value.Add("Level", mysqldr[3].ToString());
+                    
+                   
                     if (mysqldr[0].ToString() == Password)//密码正确返回值0
                     {
-
+                        //赋值操作员的一些具体信息
+                        value.Add("Name", mysqldr[2].ToString());
+                        value.Add("Emp_number", mysqldr[1].ToString());
+                        value.Add("Level", mysqldr[3].ToString());
                         Close();
                         return 0;
                     }
@@ -1705,7 +1706,7 @@ namespace MySQL
     {
 
         //构建数据库连接字符串
-        protected string M_str_sqlcon = "server=localhost;user id=root;password=12345678;database=deehero"; //根据自己的设置
+        protected string M_str_sqlcon = "server=localhost;user id=root;password=12345678;database=b_stock"; //根据自己的设置
                                                                                                             //创建数据库连接对象
         protected MySqlConnection mycon = new MySqlConnection();
 

@@ -17,6 +17,8 @@ namespace B_stock
         public Form_login()
         {
             InitializeComponent();
+            textBox1.Text = "2112002329";
+            textBox2.Text = "12345678";
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -33,7 +35,7 @@ namespace B_stock
                 oper_Emp.Emp_number = list["Emp_number"];
                 oper_Emp.Name = list["Name"];
                 oper_Emp.Level = Convert.ToInt32(list["Level"]);
-                Form_major form_Major = new Form_major ();
+                Form_major form_Major = new Form_major (oper_Emp);
                 form_Major.Show();//打开窗体
                 this.Visible = false;//隐藏该窗体
             }
@@ -88,5 +90,7 @@ namespace B_stock
 
             }
         }
+
+        
     }
 }

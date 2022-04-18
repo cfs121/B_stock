@@ -42,9 +42,10 @@
             // 
             // panel1
             // 
-            this.panel1.Location = new System.Drawing.Point(0, 31);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 28);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1900, 1000);
+            this.panel1.Size = new System.Drawing.Size(1902, 1005);
             this.panel1.TabIndex = 0;
             // 
             // menuStrip1
@@ -80,21 +81,21 @@
             // 入库端ToolStripMenuItem
             // 
             this.入库端ToolStripMenuItem.Name = "入库端ToolStripMenuItem";
-            this.入库端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.入库端ToolStripMenuItem.Size = new System.Drawing.Size(129, 26);
             this.入库端ToolStripMenuItem.Text = "入库端";
             this.入库端ToolStripMenuItem.Click += new System.EventHandler(this.入库端ToolStripMenuItem_Click);
             // 
             // 出库端ToolStripMenuItem
             // 
             this.出库端ToolStripMenuItem.Name = "出库端ToolStripMenuItem";
-            this.出库端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.出库端ToolStripMenuItem.Size = new System.Drawing.Size(129, 26);
             this.出库端ToolStripMenuItem.Text = "出库端";
             this.出库端ToolStripMenuItem.Click += new System.EventHandler(this.出库端ToolStripMenuItem_Click);
             // 
             // 确认端ToolStripMenuItem
             // 
             this.确认端ToolStripMenuItem.Name = "确认端ToolStripMenuItem";
-            this.确认端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.确认端ToolStripMenuItem.Size = new System.Drawing.Size(129, 26);
             this.确认端ToolStripMenuItem.Text = "确认端";
             this.确认端ToolStripMenuItem.Click += new System.EventHandler(this.确认端ToolStripMenuItem_Click);
             // 
@@ -120,6 +121,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form_major";
             this.Text = "主界面";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_major_FormClosed);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

@@ -81,11 +81,17 @@
     <EmbeddedResource Include="Form_cheek.resx">
       <DependentUpon>Form_cheek.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_intake.resx">
+      <DependentUpon>Form_intake.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_login.resx">
       <DependentUpon>Form_login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_major.resx">
       <DependentUpon>Form_major.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_output.resx">
+      <DependentUpon>Form_output.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
