@@ -35,6 +35,8 @@ namespace MySQL
                     Parameter.Class_Parameter.Group_gap = (Int32)mysqldr[5];
                     Parameter.Class_Parameter.Shelf_gap = (Int32)mysqldr[6];
                     Parameter.RGV.Start_location = (Int32)mysqldr[4];
+                    Parameter.Class_Parameter.Sever_addres = mysqldr[7].ToString();
+                    Parameter.Class_Parameter.COM = (Int32)mysqldr[8];
                 }
 
 
@@ -106,6 +108,34 @@ namespace MySQL
 
 
 
+        }
+
+        public void getDeviceNumber(string device_class,string emp_number,ref List<int> device_list)
+        {
+            string mysqlStr =string.Format("select a.Device_number from operator_table a join device_table b on a.Device_number=b.Device_number " +
+                "where a.Emp_number='{0}' and b.Device_class='{1}'",emp_number,device_class);
+            
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())//读一行
+                {
+                    device_list.Add((Int32)mysqldr[0]);
+
+                }
+                Close();
+                return ;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return ;
+            }
         }
         /// <summary>
         /// 查询可用的货架，将其记录在序列中

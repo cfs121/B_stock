@@ -60,6 +60,22 @@ namespace Parameter
             set { shelf_gap = value; }
         }
 
+        private static string sever_addres;
+
+        public static string Sever_addres
+        {
+            get { return sever_addres; }
+            set { sever_addres = value; }
+        }
+
+        private static int com;
+
+        public static int COM
+        {
+            get { return com; }
+            set { com = value; }
+        }
+
 
 
 

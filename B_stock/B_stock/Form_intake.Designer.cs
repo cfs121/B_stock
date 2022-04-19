@@ -38,6 +38,12 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label_device = new System.Windows.Forms.Label();
+            this.label_emp = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox4
@@ -137,11 +143,70 @@
             this.button1.Text = "发送收纸请求";
             this.button1.UseVisualStyleBackColor = true;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(1145, 68);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(82, 15);
+            this.label5.TabIndex = 20;
+            this.label5.Text = "设备编号：";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(1145, 106);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(82, 15);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "设备名称：";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(1145, 142);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(82, 15);
+            this.label7.TabIndex = 22;
+            this.label7.Text = "员工编号：";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(1231, 68);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(169, 23);
+            this.comboBox1.TabIndex = 23;
+            // 
+            // label_device
+            // 
+            this.label_device.AutoSize = true;
+            this.label_device.Location = new System.Drawing.Point(1235, 106);
+            this.label_device.Name = "label_device";
+            this.label_device.Size = new System.Drawing.Size(55, 15);
+            this.label_device.TabIndex = 24;
+            this.label_device.Text = "label8";
+            // 
+            // label_emp
+            // 
+            this.label_emp.AutoSize = true;
+            this.label_emp.Location = new System.Drawing.Point(1235, 140);
+            this.label_emp.Name = "label_emp";
+            this.label_emp.Size = new System.Drawing.Size(55, 15);
+            this.label_emp.TabIndex = 25;
+            this.label_emp.Text = "label9";
+            // 
             // Form_intake
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1882, 953);
+            this.Controls.Add(this.label_emp);
+            this.Controls.Add(this.label_device);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBox3);
@@ -154,6 +219,7 @@
             this.Controls.Add(this.button1);
             this.Name = "Form_intake";
             this.Text = "Form_intake";
+            this.Load += new System.EventHandler(this.Form_intake_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,5 +237,11 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label_device;
+        private System.Windows.Forms.Label label_emp;
     }
 }

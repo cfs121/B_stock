@@ -43,7 +43,7 @@ namespace B_stock
                 MessageBox.Show("抱歉，您没有操作该界面的权限，请通知主管修改您的权限或者更换账号。","提示");
                 return;
             }
-            Form_intake form_Intake = new Form_intake();
+            Form_intake form_Intake = new Form_intake(oper_);
             Showform(form_Intake);
         }
 
@@ -54,7 +54,7 @@ namespace B_stock
                 MessageBox.Show("抱歉，您没有操作该界面的权限，请通知主管修改您的权限或者更换账号。", "提示");
                 return;
             }
-            Form_output form_Output = new Form_output();
+            Form_output form_Output = new Form_output(oper_);
             Showform(form_Output);
         }
 

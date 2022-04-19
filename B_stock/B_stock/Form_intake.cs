@@ -7,14 +7,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MySQL;
+using Parameter;
+
 
 namespace B_stock
 {
     public partial class Form_intake : Form
     {
-        public Form_intake()
+        oper_emp oper_Emp = new oper_emp();
+
+        public void setComblist(List<int> list)
         {
+            foreach (var item in list)
+            {
+                comboBox1.Items.Add(item.ToString());
+            }
+        }
+        public Form_intake(oper_emp login_emp)
+        {
+            oper_Emp = login_emp;
             InitializeComponent();
+            
+        }
+
+        private void Form_intake_Load(object sender, EventArgs e)
+        {
+            Form.CheckForIllegalCrossThreadCalls = false;//允许其它线程
+            MySQL.Select select = new Select();
+            label_emp.Text = oper_Emp.Emp_number;
+            label_device.Text = "";
+            select.set();//设置各类基本参数
+            List<int> device = new List<int>();
+            select.getDeviceNumber("in",oper_Emp.Emp_number,ref device);
+            setComblist(device);//初始化设备选择下拉餐单
+            //初始化设备信息
+            //初始化储位图形
         }
     }
 }
