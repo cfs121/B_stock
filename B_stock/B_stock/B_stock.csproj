@@ -116,6 +116,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GDI\GDI.csproj">
+      <Project>{2826ac0d-ce94-4252-9175-0eadb1f24545}</Project>
+      <Name>GDI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MySQL\MySQL.csproj">
       <Project>{b575ff3b-4ce6-4061-acd8-cacd595cd2dd}</Project>
       <Name>MySQL</Name>

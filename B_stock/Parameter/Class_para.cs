@@ -81,6 +81,34 @@ namespace Parameter
 
 
     }
+
+    public struct Device
+    {
+        private  string device_number;
+
+        public string Device_number
+        {
+            get { return device_number; }
+            set { device_number = value; }
+        }
+        private int access;
+
+        public int Access
+        {
+            get { return access ; }
+            set { access  = value; }
+        }
+
+        private string name;
+
+        public string  Name
+        {
+            get { return name ; }
+            set { name = value; }
+        }
+
+
+    }
     /// <summary>
     /// 用于记录操作员实例
     /// </summary>
@@ -432,6 +460,14 @@ namespace Parameter
             get { return shelfNumber; }
             set { shelfNumber = value; }
         }
+        private string shelfName;
+
+        public string ShelfName
+        {
+            get { return shelfName; }
+            set { shelfName = value; }
+        }
+
 
         private int lenght;
 
