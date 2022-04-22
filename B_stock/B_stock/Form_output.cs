@@ -49,7 +49,7 @@ namespace B_stock
         public void loadList(string number)
         {
             MySQL.Select select = new Select();
-            GDI.Print print = new Print();
+            GDI.PrintWhitFont printWhitFont = new PrintWhitFont();
             select.setShelfList("Device_out_number",number,ref shelfList,ref shelfDic);
             pictureList.Add(pictureBox1);
             pictureList.Add(pictureBox2);
@@ -59,9 +59,25 @@ namespace B_stock
             labels.Add(label10);
             labels.Add(label11);
             labels.Add(label12);
+            for (int i = 0; i < 4; i++)
+            {
+                labels[i].Text = "";
+            }
+            List<string> coods = new List<string>();
+            List<int> length = new List<int>();
+            List<int> width = new List<int>();
             for (int i = 0; i < shelfDic.Count; i++)
             {
+                coods.Clear();
+                length.Clear();
+                width.Clear();
+                select.getStorageForPrint(shelfList[i],ref coods,ref length,ref width);
+                //初始化抬头
+                labels[i].Text = shelfDic[shelfList[i]].ShelfName;
                 //初始化图像
+                pictureList[i].Image= printWhitFont.StoreMap(shelfDic[shelfList[i]], 
+                  pictureList[i],coods,length,width);
+                
             }
 
         }
@@ -97,7 +113,7 @@ namespace B_stock
             select.getDeviceInfor(de_.Device_number,ref de_);
             setDevice(de_);
             //初始化三个列表并初始化储位图形
-            
+            loadList(de_.Device_number);
 
         }
 

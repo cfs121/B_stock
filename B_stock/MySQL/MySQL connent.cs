@@ -181,14 +181,14 @@ namespace MySQL
                 MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
 
                 while (mysqldr.Read())//读一行
-                {
+                 {
                     shelf shelf = new shelf();
                     //得到各项参数
                     shelf.ShelfNumber = (Int32)mysqldr[1];
                     shelf.ShelfName = mysqldr[2].ToString();
                     shelf.Lenght = (Int32)mysqldr[5];
                     shelf.Width=(Int32)mysqldr[6];
-                    shelf.Max_dis = (Int32)mysqldr[7];
+                    shelf.Max_dis = (Int32) mysqldr[7];
                     shelf.Min_dis = (Int32)mysqldr[8];
                     //进入集合
                     shellist.Add(shelf.ShelfNumber);
@@ -209,6 +209,9 @@ namespace MySQL
                 return;
             }
         }
+
+
+
 
         /// <summary>
         /// 查询可用的货架，将其记录在序列中
@@ -287,7 +290,9 @@ namespace MySQL
         /// <param name="w_idth">宽度尺寸序列</param>
         public void getStorageForPrint(int shelf_number, ref List<string> c_oods, ref List<int> l_enght, ref List<int> w_idth)
         {
-            string mysqlStr = string.Format("select Description_number,Length,Width from storage_position where Shelf_number={0} order by Allocation", shelf_number);
+            string mysqlStr = string.Format("select st.Order_number,des.Net_length,des.Net_width from storage_position st join order_table ord on st.Order_number=ord.Order_number join description_table des"+ 
+                " on ord.Description_number = des.Description_number"+
+                 " where st.Shelf_number ={0} order by st.Allocation", shelf_number);
             Open();//打开通讯通道
             try
             {
@@ -498,7 +503,7 @@ namespace MySQL
     {
 
         //构建数据库连接字符串
-        protected string M_str_sqlcon = "server=localhost;user id=root;password=12345678;database=b_stock"; //根据自己的设置
+        protected string M_str_sqlcon = "server=localhost ;user id=root;password=12345678;database=b_stock"; //根据自己的设置
                                                                                                             //创建数据库连接对象
         protected MySqlConnection mycon = new MySqlConnection();
 
