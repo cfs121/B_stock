@@ -10,6 +10,9 @@ using System.Windows.Forms;
 using MySQL;
 using Parameter;
 using GDI;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 
 
 namespace B_stock
@@ -24,9 +27,14 @@ namespace B_stock
 
         List<PictureBox> pictureList = new List<PictureBox>();
 
-
         List<Label> labels = new List<Label>();
-        
+        /// <summary>
+        /// 建立通讯的socket
+        /// </summary>
+        Socket socketSent;
+        Thread socketTH;
+
+
         public void setComblist(List<string> list)
         {
             foreach (var item in list)
@@ -83,7 +91,65 @@ namespace B_stock
         }
 
 
+//***********************************************************************************************************************************//
+//与stocket通讯相关的函数
+        private void startSocket(string sever_addres,int COM)
+        {
+            //创建负责连接的socket
+            try
+            {
 
+                socketSent = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //获取ip地址
+                IPAddress ip = IPAddress.Parse(sever_addres);
+                //创建端口号
+                IPEndPoint point = new IPEndPoint(ip, COM);
+                //设置远程服务器的IP地址和端口号
+                socketSent.Connect(point);
+                showstate("连接成功");
+
+                socketTH = new Thread(recive);
+                socketTH.IsBackground = true;
+                socketTH.Start();
+
+
+            }
+            catch (Exception ex)
+            {
+                showstate("连接失败");
+                MessageBox.Show(ex.ToString(),"错误");
+                //记录错误信息
+
+            }
+
+        }
+        private void recive()
+        {
+            try
+            {
+                while (true)
+                {
+                    byte[] buffer = new byte[1024 * 1024 * 2];
+                    int i = socketSent.Receive(buffer);
+                    if (i == 0)
+                    {
+                        break;
+                    }
+                    string str = Encoding.UTF8.GetString(buffer, 0, i);
+                    
+                }
+            }
+            catch
+            {
+
+
+            }
+
+        }
+        private void showstate(string text)
+        {
+            label14.Text = text;
+        }
 
 
 
@@ -91,6 +157,25 @@ namespace B_stock
 
         //********************************************************************************************************************************//
         //各类界面事件
+
+
+        private void box_MouseClick(object sender, MouseEventArgs e)
+        {
+            PictureBox sentPictureBox = sender as PictureBox;
+            shelf shelf = new shelf();
+            MySQL.Select select = new Select();
+            int i = pictureList.FindIndex(item=>item.Equals(sentPictureBox));
+            shelf = shelfDic[shelfList[i]];
+            string strinlist = "";
+            
+            if (select.findForClick(ref strinlist, sentPictureBox, shelf, e.Y))
+            {
+                MessageBox.Show(strinlist);
+            }
+            
+            
+
+        }
         public Form_output(oper_emp login_emp)
         {
             oper_Emp = login_emp;
@@ -103,6 +188,12 @@ namespace B_stock
             MySQL.Select select = new Select();
             select.set();//设置各类基本参数
             label_emp.Text = oper_Emp.Emp_number;
+            //连接主控端
+            //string add = "";
+            //int com=0;
+            //select.getSeverInfor(ref add,ref com);
+            //startSocket(add,com);
+
             //初始化设备选择下拉餐单
             List<string> device = new List<string>();
             select.getDeviceNumber("out", oper_Emp.Emp_number, ref device);
@@ -125,5 +216,9 @@ namespace B_stock
             select.getDeviceInfor(de_.Device_number, ref de_);
             setDevice(de_);
         }
+
+       
     }
+
+   
 }

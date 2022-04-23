@@ -210,18 +210,10 @@ namespace MySQL
             }
         }
 
-
-
-
-        /// <summary>
-        /// 查询可用的货架，将其记录在序列中
-        /// </summary>
-        /// <param name="shelfList">用于记录序列的动态数组</param>
-        /// <returns>可用货架的总数</returns>
-        public int getAbleShelfCount(ArrayList shelfList)
+        public void getSeverInfor(ref string sever_add,ref int com)
         {
-            string mysqlStr = "select * from storage_status";
-            int count = 0;
+            string mysqlStr = string.Format("select socket,COM from dasic_infor");
+
             Open();//打开通讯通道
             try
             {
@@ -230,45 +222,8 @@ namespace MySQL
 
                 while (mysqldr.Read())//读一行
                 {
-                    if ((string)mysqldr[9] == "1")
-                    {
-                        shelfList.Add(mysqldr[1]);
-                        count++;
-                    }
-
-                }
-                Close();
-                return count;
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show(ex.ToString());
-                Close();
-                return 0;
-            }
-        }
-        /// <summary>
-        /// 根据数据库的情况设置对应的shelf类
-        /// </summary>
-        /// <param name="shelf">需要设置的shelf类参数</param>
-        public void SetShelf(shelf shelf)
-        {
-            string mysqlStr = string.Format("select * from storage_status where Shelf_number={0}", shelf.ShelfNumber);
-            Open();//打开通讯通道
-            try
-            {
-                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
-                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
-
-                while (mysqldr.Read())//读一行
-                {
-                    shelf.Lenght = (Int32)mysqldr[4];
-                    shelf.Width = (Int32)mysqldr[5];
-                    shelf.Hight = (Int32)mysqldr[6];
-                    shelf.Max_dis = Convert.ToInt32( mysqldr[7]);
-                    shelf.Min_dis= Convert.ToInt32(mysqldr[8]); 
-
+                    sever_add = mysqldr[0].ToString();
+                    com = (Int32)mysqldr[1];
                 }
                 Close();
                 return;
@@ -318,6 +273,133 @@ namespace MySQL
             }
 
         }
+
+        public bool findForClick( ref string inf, PictureBox box, shelf shelf, int y)
+        {
+            decimal ratioY = (decimal)y / box.Size.Height;
+            decimal ratioDesTop;
+            decimal ratioDesBow;
+
+
+            int toLength;//起始位置
+            int maxLenght = shelf.Lenght;
+            bool empty = true;//记录是否为空货架
+            string des_number = "";
+            string order_number = "";
+            int Gap = Parameter.Class_Parameter.Gap;
+            bool whileFlage = false;
+
+            string mysqlStr = string.Format("select st.Order_number as 订单编号,ord.Description_number as 品名编号,des.Net_length from storage_position st join order_table ord " +
+                "on st.Order_number=ord.Order_number join description_table des on ord.Description_number=des.Description_number " +
+                "where st.Shelf_number={0} order by st.Allocation;", shelf.ShelfNumber);
+            Open();//打开通讯通道
+            MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+            MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+            try
+            {
+
+
+                if (true)//在左边，偶数区
+                {
+                    toLength = 0;
+                    while (mysqldr.Read())//读一行
+                    {
+                        empty = false;
+                        ratioDesTop = (decimal)(toLength + (Int32)mysqldr[2]) / maxLenght;
+                        ratioDesBow = (decimal)toLength / maxLenght;
+                        if (ratioDesTop >= ratioY && ratioDesBow <= ratioY)
+                        {
+                            whileFlage = true;
+                            order_number = mysqldr[0].ToString();
+                            des_number = (string)mysqldr[1];
+                            for (int i = 0; i < mysqldr.FieldCount; i++)
+                            {
+                                inf = inf + mysqldr.GetName(i) + ": " + Convert.ToString(mysqldr[i]) + "\n";
+                            }
+
+                        }
+                        toLength = toLength + Gap + (Int32)mysqldr[2];
+
+                    }
+
+
+                }
+                else//在右侧，奇数区
+                {
+                    empty = false;
+                    toLength = shelf.Lenght;
+
+                    while (mysqldr.Read())//读一行
+                    {
+
+                        empty = false;
+                        ratioDesTop = (decimal)(toLength - (Int32)mysqldr[2]) / maxLenght;
+                        ratioDesBow = (decimal)toLength / maxLenght;
+                        if (ratioDesTop <= ratioY && ratioDesBow >= ratioY)
+                        {
+                            whileFlage = true;
+                            order_number = mysqldr[0].ToString();
+                            des_number = (string)mysqldr[1];
+                            for (int i = 0; i < mysqldr.FieldCount; i++)
+                            {
+                                inf = inf + mysqldr.GetName(i) + ": " + Convert.ToString(mysqldr[i]) + "\n";
+                            }
+                        }
+                        toLength = toLength - Gap - (Int32)mysqldr[2];
+                    }
+
+                }
+
+                if (empty)
+                {
+                    MessageBox.Show("该货架为空货架，若有图形显示，请检查程序"
+                        + "\n" + "若无图形显示，请误乱点", "提示");
+                    Close();
+                    return false;
+                }
+                if (whileFlage==false)
+                {
+                    MessageBox.Show("您是否在点击空白区域，或者图形边缘" + "\n"+
+                        "（图形显示有一定误差，请尽量点击图形的中心区域）", "提示");
+                    Close();
+                    return false;
+                }
+
+                mysqldr.Close();
+
+                mysqlStr = string.Format("select cus.Customer_name as 客户名,des.Description_name as 品名,des.Net_length as 净长,des.Net_width as 净宽 " +
+                    "from description_table des join customer_infor cus " +
+                    "on des.Customer_number=cus.Customer_number where des.Description_number={0}", des_number);
+                using (mySqlCommand = new MySqlCommand(mysqlStr, mycon))
+                mysqldr = mySqlCommand.ExecuteReader();
+                if (mysqldr.Read() == true)
+                {
+                    for (int i = 0; i < mysqldr.FieldCount; i++)//从第二个字段开始读起
+                    {
+                        inf = inf + mysqldr.GetName(i) + ": " + Convert.ToString(mysqldr[i]) + "\n";
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("存在storage_position表中有description_infro表中不存在的编号", "错误");
+                }
+
+                Close();
+                return true;
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return false;
+            }
+
+        }
+
+
         /// <summary>
         /// 查询该品名是否存在
         /// </summary>

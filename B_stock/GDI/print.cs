@@ -14,8 +14,8 @@ namespace GDI
     
     public class Print
     {
-        int intercept = 4;//字符串末尾截取长度
 
+        int intercept = 4;
 
         /// <summary>
         /// 生成对应货架区域上等比例的货物图形
@@ -26,14 +26,14 @@ namespace GDI
         /// <param name="widthOf">货架上商品宽度序列</param>
         /// <returns>返回</returns>
        virtual public Bitmap StoreMap(shelf shelf, PictureBox box, List<string> coodsOf, List<int> lengthOf, List<int> widthOf)
-        {
-            int pt = Convert.ToInt32(10 * ((decimal)60 / box.Width));//图例字体大小-像素
+       {
+            
 
 
-            string ident = "";
+           
 
             Point PIdent = new Point();
-            Font font = new Font("新宋体", pt, FontStyle.Bold, GraphicsUnit.Pixel);
+            
             int width = box.Width;
             int height = box.Height;
             Bitmap bmp = new Bitmap(width, height);//按照相框尺寸，新建一个图片对象,
@@ -43,11 +43,7 @@ namespace GDI
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;//优化图片效果
             Graphics graph = Graphics.FromImage(bmp);
             SizeF sizeF = new SizeF();
-            if (shelf.ShelfNumber % 2 != 0)//设置不同的底色区分一二层
-            {
-                g.Clear(Color.GreenYellow);
-            }
-            else g.Clear(Color.Gold);
+             g.Clear(Color.Gold);
             //判断区域在左还是右
             if (shelf.ShelfNumber / 10 % 2 == 0)//在左，既偶数区
             {
@@ -61,7 +57,7 @@ namespace GDI
                 {
                     if (lengthOf[i] != 0)
                     {
-                        ident = coodsOf[i].Substring(coodsOf[i].Length - intercept);//保留字符串的末尾几位
+                       
                         reLength = (lengthOf[i] * height) / maxLenght;//方块对应的长度
                         reWidth = (widthOf[i] * width) / maxWidth;
                         Rectangle rect = new Rectangle((width - reWidth) / 2, toLength, reWidth, reLength);
@@ -69,12 +65,12 @@ namespace GDI
                         g.DrawRectangle(p, rect);//画出矩形
                         g.FillRectangle(new SolidBrush(Color.Aqua), rect);//填充矩形
 
-                        sizeF = graph.MeasureString(ident, font);
+                       
 
                         PIdent.X = (Int32)(width - sizeF.Width) / 2;
                         PIdent.Y = toLength + reLength / 2 - (Int32)(sizeF.Height / 2);//字符串的Y坐标
 
-                        g.DrawString(ident, font, new SolidBrush(Color.Black), PIdent);//画出图示
+                      
                         toLength = toLength + reLength + mapGap;
                     }
                     else continue;
@@ -95,17 +91,17 @@ namespace GDI
                 {
                     if (lengthOf[i] != 0)
                     {
-                        ident = coodsOf[i].Substring(coodsOf[i].Length - intercept);//保留字符串的末尾几位
+                        
                         reLength = (lengthOf[i] * height) / maxLenght;//方块对应的长度
                         reWidth = (widthOf[i] * width) / maxWidth;
                         Rectangle rect = new Rectangle((width - reWidth) / 2, toLength - reLength, reWidth, reLength);
 
                         g.DrawRectangle(p, rect);
                         g.FillRectangle(new SolidBrush(Color.Aqua), rect);
-                        sizeF = graph.MeasureString(ident, font);
+                        
                         PIdent.X = (Int32)(width - sizeF.Width) / 2;
                         PIdent.Y = toLength - reLength / 2 - (Int32)(sizeF.Height / 2);//字符串的Y坐标
-                        g.DrawString(ident, font, new SolidBrush(Color.Black), PIdent);
+                        
                         toLength = toLength - reLength - mapGap;
                     }
                     else continue;
@@ -131,7 +127,7 @@ namespace GDI
         /// <returns></returns>
         virtual public Bitmap StoreMap(shelf shelf, PictureBox box, string coods, List<string> coodsOf, List<int> lengthOf, List<int> widthOf)
         {
-            string ident = "";
+           
             int pt = Convert.ToInt32(10 * ((decimal)60 / box.Width));//图例字体大小-像素
 
 
@@ -179,18 +175,16 @@ namespace GDI
 
 
 
-                        ident = coodsOf[i].Substring(coodsOf[i].Length - intercept);//保留字符串的末尾几位
+                     
                         reLength = (lengthOf[i] * height) / maxLenght;//方块对应的长度
                         reWidth = (widthOf[i] * width) / maxWidth;
                         Rectangle rect = new Rectangle((width - reWidth) / 2, toLength, reWidth, reLength);
 
                         g.DrawRectangle(p, rect);//画出矩形
                         g.FillRectangle(new SolidBrush(Color.Aqua), rect);//填充矩形
-                        sizeF = graph.MeasureString(ident, font);
+                       
 
-                        PIdent.X = (Int32)(width - sizeF.Width) / 2;
-                        PIdent.Y = toLength + reLength / 2 - (Int32)(sizeF.Height / 2);//字符串的Y坐标
-                        g.DrawString(ident, font, new SolidBrush(Color.Black), PIdent);//画出图示
+                       
                         toLength = toLength + reLength + mapGap;
                     }
                     else continue;
@@ -223,17 +217,15 @@ namespace GDI
                             p.Width = 2;
                         }
 
-                        ident = coodsOf[i].Substring(coodsOf[i].Length - intercept);//保留字符串的末尾几位
+                        
                         reLength = (lengthOf[i] * height) / maxLenght;//方块对应的长度
                         reWidth = (widthOf[i] * width) / maxWidth;
                         Rectangle rect = new Rectangle((width - reWidth) / 2, toLength - reLength, reWidth, reLength);
 
                         g.DrawRectangle(p, rect);
                         g.FillRectangle(new SolidBrush(Color.Aqua), rect);
-                        sizeF = graph.MeasureString(ident, font);
-                        PIdent.X = (Int32)(width - sizeF.Width) / 2;
-                        PIdent.Y = toLength - reLength / 2 - (Int32)(sizeF.Height / 2);//字符串的Y坐标
-                        g.DrawString(ident, font, new SolidBrush(Color.Black), PIdent);
+                       
+                       
                         toLength = toLength - reLength - mapGap;
                     }
                     else continue;

@@ -54,6 +54,8 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -154,6 +156,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(214, 848);
             this.pictureBox1.TabIndex = 10;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // pictureBox2
             // 
@@ -162,6 +165,7 @@
             this.pictureBox2.Size = new System.Drawing.Size(214, 848);
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
+            this.pictureBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // pictureBox3
             // 
@@ -170,6 +174,7 @@
             this.pictureBox3.Size = new System.Drawing.Size(214, 848);
             this.pictureBox3.TabIndex = 12;
             this.pictureBox3.TabStop = false;
+            this.pictureBox3.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // label_emp
             // 
@@ -242,11 +247,12 @@
             // 
             // pictureBox4
             // 
-            this.pictureBox4.Location = new System.Drawing.Point(734, 58);
+            this.pictureBox4.Location = new System.Drawing.Point(760, 58);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(214, 848);
             this.pictureBox4.TabIndex = 34;
             this.pictureBox4.TabStop = false;
+            this.pictureBox4.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // label8
             // 
@@ -284,11 +290,31 @@
             this.label12.TabIndex = 38;
             this.label12.Text = "label12";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(1115, 200);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(104, 19);
+            this.label13.TabIndex = 39;
+            this.label13.Text = "连接主控：";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(1214, 200);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(66, 19);
+            this.label14.TabIndex = 40;
+            this.label14.Text = "未连接";
+            // 
             // Form_output
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1694, 858);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
@@ -357,5 +383,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
     }
 }
