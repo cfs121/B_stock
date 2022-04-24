@@ -758,5 +758,16 @@ namespace Parameter
 
     }
 
+    public class stockOrder
+    {
+        public stockOrder(string order_set)
+        {
+
+        }
+    }
+    
+
+   
+
     
 }

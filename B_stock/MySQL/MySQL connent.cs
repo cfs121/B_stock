@@ -399,6 +399,110 @@ namespace MySQL
 
         }
 
+        public bool FindOrderInfro(string order_number,ref string infro,ref string de_in,ref string de_out)
+        {
+            string mysqlStr = string.Format("select * from order_table where Order_number={0}",order_number);
+            string des_number = "";
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                if (mysqldr.Read() == true)//读一行
+                {
+                    des_number = mysqldr[2].ToString();
+                    de_in = mysqldr[4].ToString();
+                    de_out = mysqldr[5].ToString();
+                    mysqldr.Close();
+                    mysqlStr = string.Format("select cus.Customer_name as 客户名,des.Description_name as 品名,des.Net_length as 净长," +
+                    "des.Net_width as 净宽,des.Enter_time as 录入时间 " +
+                    "from description_table des join customer_infor cus " +
+                    "on des.Customer_number=cus.Customer_number where des.Description_number={0}", des_number);
+                    using (mySqlCommand = new MySqlCommand(mysqlStr, mycon))
+                        mysqldr = mySqlCommand.ExecuteReader();
+                    if (mysqldr.Read() == true)
+                    {
+                        for (int i = 0; i < mysqldr.FieldCount; i++)
+                        {
+                            infro = infro + mysqldr.GetName(i) + ": " + Convert.ToString(mysqldr[i]) + Environment.NewLine;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("存在Order_table表中有description_infro表中不存在的编号", "错误");
+                    }
+
+                    Close();
+                    return true;
+                }
+                else
+                {
+                    Close();
+                    return false;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return true;
+            }
+        }
+        public bool FindOrderInfro(string order_number, ref string infro)
+        {
+            string mysqlStr = string.Format("select * from order_table where Order_number={0}", order_number);
+            string des_number = "";
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                if (mysqldr.Read() == true)//读一行
+                {
+                    des_number = mysqldr[2].ToString();
+                    
+                    mysqldr.Close();
+                    mysqlStr = string.Format("select cus.Customer_name as 客户名,des.Description_name as 品名,des.Net_length as 净长," +
+                    "des.Net_width as 净宽,des.Enter_time as 录入时间 " +
+                    "from description_table des join customer_infor cus " +
+                    "on des.Customer_number=cus.Customer_number where des.Description_number={0}", des_number);
+                    using (mySqlCommand = new MySqlCommand(mysqlStr, mycon))
+                        mysqldr = mySqlCommand.ExecuteReader();
+                    if (mysqldr.Read() == true)
+                    {
+                        for (int i = 0; i < mysqldr.FieldCount; i++)
+                        {
+                            infro = infro + mysqldr.GetName(i) + ": " + Convert.ToString(mysqldr[i]) + Environment.NewLine;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("存在Order_table表中有description_infro表中不存在的编号", "错误");
+                    }
+
+                    Close();
+                    return true;
+                }
+                else
+                {
+                    Close();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return true;
+            }
+        }
+
 
         /// <summary>
         /// 查询该品名是否存在

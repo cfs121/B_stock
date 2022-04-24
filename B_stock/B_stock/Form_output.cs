@@ -13,20 +13,29 @@ using GDI;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-
+using System.Reflection;
 
 namespace B_stock
 {
     public partial class Form_output : Form
     {
         //界面初始化所用的系列函数
-        oper_emp oper_Emp = new oper_emp();
 
+          //全局通用的变量
+        oper_emp oper_Emp = new oper_emp();
+        Device nowDevice = new Device();
+         
         List<int> shelfList = new List<int>();
         Dictionary<int, shelf> shelfDic = new Dictionary<int, shelf>();
 
         List<PictureBox> pictureList = new List<PictureBox>();
-
+        List<int> InquiredShelf = new List<int>();
+        private static bool inquired;
+        private static bool Inquired
+        {
+            get { return inquired; }
+            set { inquired = value; }
+        }
         List<Label> labels = new List<Label>();
         /// <summary>
         /// 建立通讯的socket
@@ -50,15 +59,31 @@ namespace B_stock
              
         }
 
-        public void rePicture()
-        {
-
-        }
-        public void loadList(string number)
+        /// <summary>
+        /// 重新绘画对应存储情况
+        /// </summary>
+        /// <param name="shelf_number"></param>
+        public void rePicture(int shelf_number)
         {
             MySQL.Select select = new Select();
             GDI.PrintWhitFont printWhitFont = new PrintWhitFont();
-            select.setShelfList("Device_out_number",number,ref shelfList,ref shelfDic);
+            
+
+            List<string> coods = new List<string>();
+            List<int> length = new List<int>();
+            List<int> width = new List<int>();
+            int index = shelfList.FindIndex(item => item.Equals(shelf_number));
+               
+            select.getStorageForPrint(shelfList[index], ref coods, ref length, ref width);
+            
+            pictureList[index].Image = printWhitFont.StoreMap(shelfDic[shelfList[index]],
+                pictureList[index], coods, length, width);
+
+            
+        }
+
+        internal void loadList()
+        {
             pictureList.Add(pictureBox1);
             pictureList.Add(pictureBox2);
             pictureList.Add(pictureBox3);
@@ -67,10 +92,51 @@ namespace B_stock
             labels.Add(label10);
             labels.Add(label11);
             labels.Add(label12);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < labels.Count; i++)
             {
                 labels[i].Text = "";
             }
+        }
+
+        private void reLoadList()
+        {
+            for (int i = shelfList.Count; i < pictureList.Count; i++)
+            {
+                pictureList[i].Visible = false;
+                labels[i].Text = "";
+            }
+
+        }
+
+        private void loadEvent()
+        {
+            this.comboBox1.SelectedValueChanged += new System.EventHandler(this.comboBox1_SelectedValueChanged);
+            
+            for (int i = 0; i < shelfList.Count; i++)
+            {
+                pictureList[i].MouseClick+= new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
+            }
+        }
+        private void reEvent()
+        {
+
+            for (int i = 0; i < pictureList.Count; i++)
+            {
+                ClearEvent(pictureList[i], "MouseClick");
+            }
+            for (int i = 0; i < shelfList.Count; i++)
+            {
+                pictureList[i].MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
+            }
+        }
+        public void initPicture(string number)
+        {
+            MySQL.Select select = new Select();
+            GDI.PrintWhitFont printWhitFont = new PrintWhitFont();
+            shelfDic.Clear();
+            shelfList.Clear();
+            select.setShelfList("Device_out_number",number,ref shelfList,ref shelfDic);
+            
             List<string> coods = new List<string>();
             List<int> length = new List<int>();
             List<int> width = new List<int>();
@@ -151,7 +217,33 @@ namespace B_stock
             label14.Text = text;
         }
 
+        //*****************************************************************************************************************************************//
+        //辅助函数
+        /// <summary>
+        /// 删除指定控件的指定事件
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="eventname"></param>
+        public void ClearEvent(System.Windows.Forms.Control control, string eventname)
+        {
+            if (control == null) return;
+            if (string.IsNullOrEmpty(eventname)) return;
 
+            BindingFlags mPropertyFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
+            BindingFlags mFieldFlags = BindingFlags.Static | BindingFlags.NonPublic;
+            Type controlType = typeof(System.Windows.Forms.Control);
+            PropertyInfo propertyInfo = controlType.GetProperty("Events", mPropertyFlags);
+            EventHandlerList eventHandlerList = (EventHandlerList)propertyInfo.GetValue(control, null);
+            FieldInfo fieldInfo = (typeof(System.Windows.Forms.Control)).GetField("Event" + eventname, mFieldFlags);
+            Delegate d = eventHandlerList[fieldInfo.GetValue(control)];
+
+            if (d == null) return;
+            EventInfo eventInfo = controlType.GetEvent(eventname);
+
+            foreach (Delegate dx in d.GetInvocationList())
+                eventInfo.RemoveEventHandler(control, dx);
+
+        }
 
 
 
@@ -203,9 +295,15 @@ namespace B_stock
             de_.Device_number = device[0];
             select.getDeviceInfor(de_.Device_number,ref de_);
             setDevice(de_);
+            nowDevice = de_;
             //初始化三个列表并初始化储位图形
-            loadList(de_.Device_number);
+            Inquired = false;
+            loadList();
+            initPicture(de_.Device_number);
 
+            //列表初始化后再增加事件函数
+            loadEvent();
+            
         }
 
         private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
@@ -215,9 +313,89 @@ namespace B_stock
             de_.Device_number = comboBox1.Text;
             select.getDeviceInfor(de_.Device_number, ref de_);
             setDevice(de_);
+            //初始化三个列表并初始化储位图形
+            
+            initPicture(de_.Device_number);
+            reLoadList();
+            //重新初始化事件函数
+            reEvent();
         }
 
-       
+        /// <summary>
+        /// 发送请求
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+        /// <summary>
+        /// 查询货物位置
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button2_Click(object sender, EventArgs e)
+        {
+            MySQL.Select select = new Select();
+            string inf = "";
+            string deviceIn="";
+            string desviceOut="";
+            if (Inquired == false)
+            {
+                if (select.FindOrderInfro(textBox4.Text, ref inf, ref deviceIn, ref desviceOut))
+                {
+                    if (desviceOut == nowDevice.Device_number)
+                    {
+                        textBox3.Text = inf;
+                        //标记对应图片
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("数据库中无此单号的订单，请检查您是否输入错误" +
+                        "\n" +
+                        "或咨询主管是否数据录入错误", "提示");
+                }
+            }
+            else
+            {
+                foreach (var item in InquiredShelf)
+                {
+                    rePicture(item);
+                }
+                InquiredShelf = null;
+                Inquired = false;
+            }
+
+           
+        }
+        /// <summary>
+        /// 订单号输入
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\r')//扫描枪键入或者手工输入直至回车
+            {
+                e.Handled = true;//执行该事件
+                MySQL.Select select = new Select();
+                string inf = "";
+                if (select.FindOrderInfro(textBox4.Text, ref inf))
+                {
+                    textBox3.Text = inf;
+                }
+                else
+                {
+                    MessageBox.Show("数据库中无此单号的订单，请检查您是否输入错误" +
+                        "\n" +
+                        "或咨询主管是否数据录入错误","提示");
+                }
+
+            }
+        }
     }
 
    

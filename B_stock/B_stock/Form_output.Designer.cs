@@ -71,6 +71,7 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "发送收纸请求";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
@@ -81,6 +82,7 @@
             this.button2.TabIndex = 1;
             this.button2.Text = "查询";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // textBox1
             // 
@@ -148,6 +150,7 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(205, 28);
             this.textBox4.TabIndex = 9;
+            this.textBox4.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox4_KeyPress);
             // 
             // pictureBox1
             // 
@@ -156,7 +159,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(214, 848);
             this.pictureBox1.TabIndex = 10;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // pictureBox2
             // 
@@ -165,7 +167,6 @@
             this.pictureBox2.Size = new System.Drawing.Size(214, 848);
             this.pictureBox2.TabIndex = 11;
             this.pictureBox2.TabStop = false;
-            this.pictureBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // pictureBox3
             // 
@@ -174,7 +175,6 @@
             this.pictureBox3.Size = new System.Drawing.Size(214, 848);
             this.pictureBox3.TabIndex = 12;
             this.pictureBox3.TabStop = false;
-            this.pictureBox3.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // label_emp
             // 
@@ -199,7 +199,6 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(65, 26);
             this.comboBox1.TabIndex = 29;
-            this.comboBox1.SelectedValueChanged += new System.EventHandler(this.comboBox1_SelectedValueChanged);
             // 
             // label7
             // 
@@ -252,7 +251,6 @@
             this.pictureBox4.Size = new System.Drawing.Size(214, 848);
             this.pictureBox4.TabIndex = 34;
             this.pictureBox4.TabStop = false;
-            this.pictureBox4.MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             // 
             // label8
             // 
