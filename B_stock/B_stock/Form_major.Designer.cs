@@ -43,9 +43,10 @@
             // panel1
             // 
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 28);
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1902, 1005);
+            this.panel1.Size = new System.Drawing.Size(1524, 936);
             this.panel1.TabIndex = 0;
             // 
             // menuStrip1
@@ -58,14 +59,15 @@
             this.测试ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1902, 28);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(1524, 25);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // 文件ToolStripMenuItem
             // 
             this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
-            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
+            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.文件ToolStripMenuItem.Text = "文件";
             // 
             // 界面ToolStripMenuItem
@@ -75,50 +77,51 @@
             this.出库端ToolStripMenuItem,
             this.确认端ToolStripMenuItem});
             this.界面ToolStripMenuItem.Name = "界面ToolStripMenuItem";
-            this.界面ToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
+            this.界面ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.界面ToolStripMenuItem.Text = "界面";
             // 
             // 入库端ToolStripMenuItem
             // 
             this.入库端ToolStripMenuItem.Name = "入库端ToolStripMenuItem";
-            this.入库端ToolStripMenuItem.Size = new System.Drawing.Size(129, 26);
+            this.入库端ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.入库端ToolStripMenuItem.Text = "入库端";
             this.入库端ToolStripMenuItem.Click += new System.EventHandler(this.入库端ToolStripMenuItem_Click);
             // 
             // 出库端ToolStripMenuItem
             // 
             this.出库端ToolStripMenuItem.Name = "出库端ToolStripMenuItem";
-            this.出库端ToolStripMenuItem.Size = new System.Drawing.Size(129, 26);
+            this.出库端ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.出库端ToolStripMenuItem.Text = "出库端";
             this.出库端ToolStripMenuItem.Click += new System.EventHandler(this.出库端ToolStripMenuItem_Click);
             // 
             // 确认端ToolStripMenuItem
             // 
             this.确认端ToolStripMenuItem.Name = "确认端ToolStripMenuItem";
-            this.确认端ToolStripMenuItem.Size = new System.Drawing.Size(129, 26);
+            this.确认端ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
             this.确认端ToolStripMenuItem.Text = "确认端";
             this.确认端ToolStripMenuItem.Click += new System.EventHandler(this.确认端ToolStripMenuItem_Click);
             // 
             // 数据ToolStripMenuItem
             // 
             this.数据ToolStripMenuItem.Name = "数据ToolStripMenuItem";
-            this.数据ToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
+            this.数据ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.数据ToolStripMenuItem.Text = "数据";
             // 
             // 测试ToolStripMenuItem
             // 
             this.测试ToolStripMenuItem.Name = "测试ToolStripMenuItem";
-            this.测试ToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
+            this.测试ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
             this.测试ToolStripMenuItem.Text = "测试";
             // 
             // Form_major
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1902, 1033);
+            this.ClientSize = new System.Drawing.Size(1524, 961);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form_major";
             this.Text = "主界面";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_major_FormClosed);

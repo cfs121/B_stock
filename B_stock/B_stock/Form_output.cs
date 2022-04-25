@@ -98,15 +98,7 @@ namespace B_stock
             }
         }
 
-        private void reLoadList()
-        {
-            for (int i = shelfList.Count; i < pictureList.Count; i++)
-            {
-                pictureList[i].Visible = false;
-                labels[i].Text = "";
-            }
-
-        }
+       
 
         private void loadEvent()
         {
@@ -129,29 +121,54 @@ namespace B_stock
                 pictureList[i].MouseClick += new System.Windows.Forms.MouseEventHandler(this.box_MouseClick);
             }
         }
-        public void initPicture(string number)
+
+        public void reSetShelf()
+        {
+
+            MySQL.Select select = new Select();
+            
+            shelfDic.Clear();
+            shelfList.Clear();
+            select.setShelfList("Device_out_number", nowDevice.Device_number, ref shelfList, ref shelfDic);
+        }
+        public void initPicture()
         {
             MySQL.Select select = new Select();
             GDI.PrintWhitFont printWhitFont = new PrintWhitFont();
-            shelfDic.Clear();
-            shelfList.Clear();
-            select.setShelfList("Device_out_number",number,ref shelfList,ref shelfDic);
+          
             
             List<string> coods = new List<string>();
             List<int> length = new List<int>();
             List<int> width = new List<int>();
-            for (int i = 0; i < shelfDic.Count; i++)
+            //for (int i = 0; i < labels.Count; i++)
+            //{
+            //    labels[i].Text = "";
+            //}
+            for (int i = 0; i <pictureList.Count; i++)
             {
-                coods.Clear();
-                length.Clear();
-                width.Clear();
-                select.getStorageForPrint(shelfList[i],ref coods,ref length,ref width);
-                //初始化抬头
-                labels[i].Text = shelfDic[shelfList[i]].ShelfName;
-                //初始化图像
-                pictureList[i].Image= printWhitFont.StoreMap(shelfDic[shelfList[i]], 
-                  pictureList[i],coods,length,width);
-                
+               
+
+
+                if (i>=shelfList.Count)
+                {
+                    //不存在的货架控件不予显示
+                    pictureList[i].Visible = false;
+                    labels[i].Text = "";
+                    
+                }
+                else
+                {
+                    coods.Clear();
+                    length.Clear();
+                    width.Clear();
+                    select.getStorageForPrint(shelfList[i], ref coods, ref length, ref width);
+                    //初始化抬头
+                    labels[i].Text = shelfDic[shelfList[i]].ShelfName;
+                    //初始化图像
+                    pictureList[i].Visible = true;
+                    pictureList[i].Image = printWhitFont.StoreMap(shelfDic[shelfList[i]],
+                      pictureList[i], coods, length, width);
+                }
             }
 
         }
@@ -303,7 +320,8 @@ namespace B_stock
             //初始化三个列表并初始化储位图形
             Inquired = false;
             loadList();
-            initPicture(de_.Device_number);
+            reSetShelf();
+            initPicture();
 
             //列表初始化后再增加事件函数
             loadEvent();
@@ -317,12 +335,14 @@ namespace B_stock
             de_.Device_number = comboBox1.Text;
             select.getDeviceInfor(de_.Device_number, ref de_);
             setDevice(de_);
+            nowDevice = de_;
             //初始化三个列表并初始化储位图形
-            
-            initPicture(de_.Device_number);
-            reLoadList();
-            //重新初始化事件函数
-            reEvent();
+            reSetShelf();
+            initPicture();
+          
+            reEvent();  //重新初始化事件函数
+
+
         }
 
         /// <summary>
@@ -432,6 +452,8 @@ namespace B_stock
 
             }
         }
+
+        
     }
 
    

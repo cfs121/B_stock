@@ -724,7 +724,7 @@ namespace MySQL
     {
 
         //构建数据库连接字符串
-        protected string M_str_sqlcon = "server=localhost ;user id=root;password=12345678;database=b_stock"; //根据自己的设置
+        protected string M_str_sqlcon = "server=localhost;user id=root;password=12345678;database=b_stock"; //根据自己的设置
                                                                                                             //创建数据库连接对象
         protected MySqlConnection mycon = new MySqlConnection();
 
