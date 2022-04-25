@@ -503,6 +503,41 @@ namespace MySQL
             }
         }
 
+        public bool findAll(string order_number,ref List<int>list)
+        {
+            string mysqlStr = string.Format("select distinct Shelf_number from storage_position where Order_number={0}", order_number);
+            string des_number = "";
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())
+                {
+                    list.Add((Int32)mysqldr[0]);
+                }
+                if (list.Count != 0)
+                {
+                    Close();
+                    return true;
+                }
+                else
+                {
+                    Close();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return true;
+            }
+        }
+         
 
         /// <summary>
         /// 查询该品名是否存在

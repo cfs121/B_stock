@@ -28,10 +28,6 @@ namespace GDI
        virtual public Bitmap StoreMap(shelf shelf, PictureBox box, List<string> coodsOf, List<int> lengthOf, List<int> widthOf)
        {
             
-
-
-           
-
             Point PIdent = new Point();
             
             int width = box.Width;
@@ -43,7 +39,8 @@ namespace GDI
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;//优化图片效果
             Graphics graph = Graphics.FromImage(bmp);
             SizeF sizeF = new SizeF();
-             g.Clear(Color.Gold);
+            //如需分层表示，则在此处加上判断语句
+            g.Clear(Color.Gold);
             //判断区域在左还是右
             if (shelf.ShelfNumber / 10 % 2 == 0)//在左，既偶数区
             {
@@ -351,7 +348,8 @@ namespace GDI
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;//优化图片效果
             Graphics graph = Graphics.FromImage(bmp);
             SizeF sizeF = new SizeF();
-            g.Clear(Color.Gold);//设置画板颜色
+            //如需设置层数，在此处添加判断
+            g.Clear(Color.DarkGray);//设置画板颜色
            
             int reLength;//记录对应比例的长度
             int reWidth;//记录对应比例的宽度
@@ -385,6 +383,75 @@ namespace GDI
             return bmp;
             
             
+        }
+
+        public override Bitmap StoreMap(shelf shelf, PictureBox box, string coods, List<string> coodsOf, List<int> lengthOf, List<int> widthOf)
+        {
+
+
+            int pt = Convert.ToInt32(40 * ((decimal)60 / box.Width));//图例字体大小-像素
+
+            string ident = "";
+            Point PIdent = new Point();
+            Font font = new Font("新宋体", pt, FontStyle.Bold, GraphicsUnit.Pixel);
+            int width = box.Size.Width;
+
+            int height = box.Size.Height;
+            Bitmap bmp = new Bitmap(width, height);//按照相框尺寸，新建一个图片对象,
+            Graphics g = Graphics.FromImage(bmp);//利用该图片对象生成“画板”
+            Pen p = new Pen(Color.Black, 2);//画笔
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;//优化图片效果
+            Graphics graph = Graphics.FromImage(bmp);
+            SizeF sizeF = new SizeF();
+            g.Clear(Color.DarkGray);
+            //判断区域在左还是右
+            
+                int reLength;//记录对应比例的长度
+                int reWidth;//记录对应比例的宽度
+                int toLength = 0;//起始位置
+                int maxLenght = shelf.Lenght;
+                int maxWidth = shelf.Width;
+                int mapGap = (Parameter.Class_Parameter.Gap * height) / maxLenght;//计算图上间距
+                for (int i = 0; i < coodsOf.Count; i++)
+                {
+                    if (lengthOf[i] != 0)
+                    {
+                        //判断是否为目标货物，
+                        if (coodsOf[i] == coods)
+                        {
+                            p.Color = Color.Red;//是目标货物，将画笔改为红色
+                            p.Width = 5;
+                        }
+                        else
+                        {
+                            p.Color = Color.Black;
+                            p.Width = 2;
+                        }
+                        ident = coodsOf[i].Substring(coodsOf[i].Length - intercept);//保留字符串的末尾几位
+                        reLength = (lengthOf[i] * height) / maxLenght;//方块对应的长度
+                        reWidth = (widthOf[i] * width) / maxWidth;
+                        Rectangle rect = new Rectangle((width - reWidth) / 2, toLength, reWidth, reLength);
+
+                        g.DrawRectangle(p, rect);//画出矩形
+                        g.FillRectangle(new SolidBrush(Color.Aqua), rect);//填充矩形
+
+                        sizeF = graph.MeasureString(ident, font);
+
+                        PIdent.X = (Int32)(width - sizeF.Width) / 2;
+                        PIdent.Y = toLength + reLength / 2 - (Int32)(sizeF.Height / 2);//字符串的Y坐标
+
+                        g.DrawString(ident, font, new SolidBrush(Color.Black), PIdent);//画出图示
+                        toLength = toLength + reLength + mapGap;
+                }
+                    else continue;
+
+                }
+                return bmp;
+            
+            
+
+
         }
     }
 

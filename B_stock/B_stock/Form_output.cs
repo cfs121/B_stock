@@ -250,7 +250,11 @@ namespace B_stock
         //********************************************************************************************************************************//
         //各类界面事件
 
-
+ /// <summary>
+ /// pictureBOX的通用点击事件
+ /// </summary>
+ /// <param name="sender"></param>
+ /// <param name="e"></param>
         private void box_MouseClick(object sender, MouseEventArgs e)
         {
             PictureBox sentPictureBox = sender as PictureBox;
@@ -338,6 +342,7 @@ namespace B_stock
         private void button2_Click(object sender, EventArgs e)
         {
             MySQL.Select select = new Select();
+            GDI.PrintWhitFont print = new PrintWhitFont();
             string inf = "";
             string deviceIn="";
             string desviceOut="";
@@ -349,6 +354,37 @@ namespace B_stock
                     {
                         textBox3.Text = inf;
                         //标记对应图片
+                        List<int> s_list = new List<int>();
+                        if (select.findAll(textBox4.Text,ref s_list)==false)
+                        {
+                            MessageBox.Show("目前登录的设备号所属的存储区内，暂无该单号的货物" +
+                                "\n" +
+                                "请检查单号是否正确或者原料还未生产完成","提示");
+                        } 
+
+
+                        List<string> coods = new List<string>();
+                        List<int> length = new List<int>();
+                        List<int> width = new List<int>();
+                        for (int i = 0; i < s_list.Count; i++)
+                        {
+                            coods.Clear();
+                            length.Clear();
+                            width.Clear();
+                            select.getStorageForPrint(s_list[i], ref coods, ref length, ref width);
+
+                            int index = shelfList.FindIndex(item => item.Equals(s_list[i]));
+                            //初始化图像
+                            pictureList[index].Image = print.StoreMap(shelfDic[shelfList[index]],pictureList[index],textBox4.Text,coods,length,width);
+
+                        }
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("该订单不是该设备生产，请检查您是否输入错误" +
+                        "\n" +
+                        "或咨询主管是否数据录入错误", "提示");
                     }
 
                 }
