@@ -352,6 +352,57 @@ namespace B_stock
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            MySQL.Select select = new Select();
+            GDI.PrintWhitFont print = new PrintWhitFont();
+            string inf = "";
+            string deviceIn = "";
+            string desviceOut = "";
+            //验证信息是否正确
+            if (select.FindOrderInfro(textBox4.Text, ref inf, ref deviceIn, ref desviceOut))
+            {
+                if (desviceOut == nowDevice.Device_number)
+                {
+                    textBox3.Text = inf;
+                    //标记对应图片
+                    List<int> s_list = new List<int>();
+                    if (select.findAll(textBox4.Text, ref s_list) == false)
+                    {
+                        MessageBox.Show("目前登录的设备号所属的存储区内，暂无该单号的货物" +
+                            "\n" +
+                            "请检查单号是否正确或者原料还未生产完成", "提示");
+                        return;
+                    }
+
+
+                    
+
+                }
+                else
+                {
+                    MessageBox.Show("该订单不是该设备生产，请检查您是否输入错误" +
+                    "\n" +
+                    "或咨询主管是否数据录入错误", "提示");
+                    return;
+                }
+
+            }
+            else
+            {
+                MessageBox.Show("数据库中无此单号的订单，请检查您是否输入错误" +
+                    "\n" +
+                    "或咨询主管是否数据录入错误", "提示");
+                return;
+            }
+
+            //请求写入数据库
+            MySQL.Insert insert = new Insert();
+            if (insert.insertToEnqueue(nowDevice, textBox4.Text, "out", 3, oper_Emp))
+            {
+                MessageBox.Show("信息进入队列成功","提示");
+            }
+            
+            //发送请求
+
 
         }
         /// <summary>
@@ -380,8 +431,9 @@ namespace B_stock
                             MessageBox.Show("目前登录的设备号所属的存储区内，暂无该单号的货物" +
                                 "\n" +
                                 "请检查单号是否正确或者原料还未生产完成","提示");
-                        } 
-
+                        }
+                        InquiredShelf = s_list;
+                        Inquired = true;
 
                         List<string> coods = new List<string>();
                         List<int> length = new List<int>();
@@ -423,6 +475,7 @@ namespace B_stock
                 }
                 InquiredShelf = null;
                 Inquired = false;
+                textBox3.Text = "";
             }
 
            

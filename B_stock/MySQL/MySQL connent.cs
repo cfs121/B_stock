@@ -692,7 +692,39 @@ namespace MySQL
 
     public class Insert : Connection
     {
+        public bool insertToEnqueue(Device device,string order_number,string class_,int priority,oper_emp _Emp)
+        {
+            string mysqlStr = string.Format("insert into enqueue(Order_number,Device_number,Class,Priority,Operator) " +
+                    "values('{0}','{1}','{2}',{3},'{4}')", order_number,device.Device_number,class_,priority,_Emp.Name);
+            
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
 
+
+
+                if (mySqlCommand.ExecuteNonQuery() > 0)
+                {
+                    Close();
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("数据库enqueue写入数据失败，0行成功" + "'/n'" + mysqlStr, "错误");
+                    Close();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return true;
+            }
+        }
     }
     
 
