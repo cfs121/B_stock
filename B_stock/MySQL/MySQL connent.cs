@@ -537,7 +537,135 @@ namespace MySQL
                 return true;
             }
         }
-         
+
+
+        public bool takeOrders(Device device,string dev_class,out DataSet data)
+        {
+            string de_class = "";
+            string table = "";
+            //分辨设备类型，SQL语句中有区分
+            if (dev_class == "out" || dev_class == "in")
+            {
+                if (dev_class=="out")
+                {
+                    de_class ="Device_out_number";
+                    table = "output_table";
+                }
+                else
+                {
+                    de_class = "Device_in_number";
+                    table = "input_table";
+                }
+            }
+            else
+            {
+                MessageBox.Show("在读取排单状态时有未知的设备类型","错误");
+                data = null;
+                return false;
+            }
+            
+            string mysqlStr = string.Format("select ord.Order_number as 订单号,des.Description_name as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(cou.sum,0) as 已叫 " +
+                "from order_table ord join description_table des on ord.Description_number=des.Description_number " +
+                "join customer_infor cus on des.Customer_number=cus.Customer_number " +
+                "left join (select Order_number,sum(Count) as sum from {0} group by Order_number) cou " +
+                "on ord.Order_number=cou.Order_number where ord.{1}={2};",table,de_class,device.Device_number);
+           
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataAdapter mySqlData = new MySqlDataAdapter(mySqlCommand);
+                DataSet ds = new DataSet();
+                mySqlData.Fill(ds ,"排单表");
+                data = ds;
+                
+
+                Close();
+                return true;
+
+              
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                data = null;
+                return false;
+            }
+        }
+
+
+        public string getqueue(Device device)
+        {
+            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级 from enqueue where Device_number={0} order by Priority,ID",device.Device_number);
+            Open();//打开通讯通道
+            //创建DataSet类的对象
+            string queue = "";
+            try
+            {
+
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())
+                {
+                    queue = queue + "编号： " + Convert.ToString(mysqldr[0]) + System.Environment.NewLine +
+                          "类型： " + Convert.ToString(mysqldr[1]) + System.Environment.NewLine +
+                          "优先级" + Convert.ToString(mysqldr[2]) + System.Environment.NewLine + System.Environment.NewLine;
+
+                }
+                Close();
+                return queue;
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return queue;
+            }
+
+        }
+        /// <summary>
+        /// 插单操作后的表单更新，防止干扰第一个指令
+        /// </summary>
+        /// <returns></returns>
+        public string getQueueAfterInsert(Device device)
+        {
+            string mysqlStr = string.Format("select Order_number as 编号,Class as 类型,Priority as 优先级 from enqueue where Device_number={0} order by ID",device.Device_number);
+            Open();//打开通讯通道
+            //创建DataSet类的对象
+            string queue = "";
+            try
+            {
+
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())
+                {
+                    queue = queue + "编号： " + Convert.ToString(mysqldr[0]) + System.Environment.NewLine +
+                           "类型： " + Convert.ToString(mysqldr[1]) + System.Environment.NewLine +
+                           "优先级" + Convert.ToString(mysqldr[2]) + System.Environment.NewLine + System.Environment.NewLine;
+                }
+                Close();
+                return queue;
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return queue;
+            }
+
+        }
+
+
 
         /// <summary>
         /// 查询该品名是否存在

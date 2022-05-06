@@ -172,6 +172,34 @@ namespace B_stock
             }
 
         }
+        public void initDataGrid()
+        {
+            DataGridViewCheckBoxColumn ChCol = new DataGridViewCheckBoxColumn();
+            ChCol.Name = "CheckBoxRow";
+            ChCol.HeaderText = "选择";
+            ChCol.Width = 50;
+            ChCol.TrueValue = "1";
+            ChCol.FalseValue = "0";
+            dataGridView1.Columns.Insert(0, ChCol);
+
+
+        }
+        public void setDataGrid()
+        {
+
+            MySQL.Select select = new Select();
+            DataSet dataSet = new DataSet();
+            if (select.takeOrders(nowDevice, "out", out dataSet))
+            {
+                dataGridView1.DataSource = dataSet.Tables[0];
+
+            }
+            else
+            {
+                MessageBox.Show("获取排单信息失败", "提示");
+            }
+        }
+
 
 
 //***********************************************************************************************************************************//
@@ -325,7 +353,13 @@ namespace B_stock
 
             //列表初始化后再增加事件函数
             loadEvent();
-            
+            //初始化排单
+            initDataGrid();
+            //填入数据
+            setDataGrid();
+            //初始化队列信息
+            textBox2.Text = select.getqueue(nowDevice);
+
         }
 
         private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
@@ -341,6 +375,13 @@ namespace B_stock
             initPicture();
           
             reEvent();  //重新初始化事件函数
+            //初始化排单
+            setDataGrid();
+            //清空之前留下的信息
+            textBox3.Text = "";
+            textBox4.Text = "";
+            //初始化队列信息
+            textBox2.Text = select.getqueue(nowDevice);
 
 
         }
@@ -352,6 +393,11 @@ namespace B_stock
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+            if (textBox4.Text=="")
+            {
+                MessageBox.Show("订单信息不能为空！！！","错误");
+                return;
+            }
             MySQL.Select select = new Select();
             GDI.PrintWhitFont print = new PrintWhitFont();
             string inf = "";
@@ -399,7 +445,13 @@ namespace B_stock
             if (insert.insertToEnqueue(nowDevice, textBox4.Text, "out", 3, oper_Emp))
             {
                 MessageBox.Show("信息进入队列成功","提示");
+                textBox2.Text = select.getqueue(nowDevice);
             }
+            else
+            {
+                MessageBox.Show("信息进入队列失败", "提示");
+            }
+
             
             //发送请求
 
@@ -475,7 +527,7 @@ namespace B_stock
                 }
                 InquiredShelf = null;
                 Inquired = false;
-                textBox3.Text = "";
+                textBox3.Text = ""  ;
             }
 
            
@@ -506,7 +558,131 @@ namespace B_stock
             }
         }
 
-        
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            MySQL.Select select = new Select();
+            string inf = "";
+            if (select.FindOrderInfro(this.dataGridView1.CurrentRow.Cells[1].Value.ToString(), ref inf))
+            {
+                textBox4.Text = this.dataGridView1.CurrentRow.Cells[1].Value.ToString();
+                textBox3.Text = inf;
+            }
+            else
+            {
+                MessageBox.Show("数据库中无此单号的订单，请检查您是否输入错误" +
+                    "\n" +
+                    "或咨询主管是否数据录入错误", "提示");
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            setDataGrid();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            List<string> order_list = new List<string>();
+            List<string> des_name = new List<string>();
+            string st_infro = "";
+            //得到勾选序列
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                if ((bool)dataGridView1.Rows[i].Cells[0].EditedFormattedValue == true)
+                {
+                    order_list.Add(dataGridView1.Rows[i].Cells[1].Value.ToString());
+                    des_name.Add(dataGridView1.Rows[i].Cells[2].Value.ToString());
+                    st_infro = st_infro + "订单尾号后4位： " +Convert.ToString(order_list[i]).Substring(order_list[i].Length- 4, 4)+
+                      "   "+ "品名： "+ des_name[i]+"\n";
+                    dataGridView1.Rows[i].Cells[0].Value = false;
+                }
+            }
+            if (order_list.Count==0)
+            {
+                MessageBox.Show("请至少在排单表中勾选一种订单号！！！","提示");
+                return;
+            }
+            //再次确认
+            DialogResult result= MessageBox.Show("您选择的是："+"\n"+st_infro,"提示",MessageBoxButtons.OKCancel);
+            if (result== DialogResult.OK)
+            {
+
+            }
+            else
+            {
+                return;
+            }
+            //后台确认可行序列
+            string inf = "";
+            string deviceIn = "";
+            string desviceOut = "";
+            st_infro = "";
+            List<int> err_lisr_index = new List<int>();
+            MySQL.Select select = new Select();
+            for (int i = 0; i < order_list.Count; i++)
+            {
+               
+                //验证信息是否正确
+                if (select.FindOrderInfro(order_list[i], ref inf, ref deviceIn, ref desviceOut))
+                {
+                    if (desviceOut == nowDevice.Device_number)
+                    {
+                        
+                        //标记对应图片
+                        List<int> s_list = new List<int>();
+                        if (select.findAll(order_list[i], ref s_list) == false)
+                        {
+                            st_infro=st_infro+ order_list[i]+": "+"目前登录的设备号所属的存储区内，暂无该单号的货物" +
+                                "\n" +
+                                "请检查单号是否正确或者原料还未生产完成"+"\n";
+                            err_lisr_index.Add(i);
+                            
+                        }
+
+
+                    }
+                    else
+                    {
+                        st_infro = st_infro + order_list[i] + ": "+"该订单不是该设备生产，请检查您是否输入错误" +
+                        "\n" +
+                        "或咨询主管是否数据录入错误"+"\n";
+                        err_lisr_index.Add(i);
+                    }
+
+                }
+                else
+                {
+                    st_infro = st_infro + order_list[i] + ": "+"数据库中无此单号的订单，请检查您是否输入错误" +
+                        "\n" +
+                        "或咨询主管是否数据录入错误"+"\n";
+                    err_lisr_index.Add(i);
+
+                }
+            }
+            //请求写入数据库
+            MySQL.Insert insert = new Insert();
+            for (int i = 0; i < order_list.Count; i++)
+            {
+                if (err_lisr_index.Exists(item=>item==i))
+                {
+                    continue;
+                }
+                if (insert.insertToEnqueue(nowDevice, order_list[i], "out", 3, oper_Emp))
+                {
+                    st_infro = st_infro + order_list[i] + ": "+"信息进入队列成功" +"\n";
+                }
+                else
+                {
+                    st_infro = st_infro + order_list[i] + ": " + "信息进入队列失败" + "\n";
+                }
+            }
+            MessageBox.Show(st_infro,"提示");
+            textBox2.Text = select.getqueue(nowDevice);
+
+            //发送请求
+
+
+        }
     }
 
    
