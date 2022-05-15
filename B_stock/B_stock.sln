@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parameter", "Parameter\Para
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MySQL", "MySQL\MySQL.csproj", "{B575FF3B-4CE6-4061-ACD8-CACD595CD2DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLC_Connection", "PLC_Connection\PLC_Connection.csproj", "{7A41E778-2028-4A94-9F00-42F0623D3736}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B575FF3B-4CE6-4061-ACD8-CACD595CD2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B575FF3B-4CE6-4061-ACD8-CACD595CD2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B575FF3B-4CE6-4061-ACD8-CACD595CD2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A41E778-2028-4A94-9F00-42F0623D3736}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A41E778-2028-4A94-9F00-42F0623D3736}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A41E778-2028-4A94-9F00-42F0623D3736}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A41E778-2028-4A94-9F00-42F0623D3736}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

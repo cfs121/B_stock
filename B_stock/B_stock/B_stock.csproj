@@ -76,8 +76,20 @@
     <Compile Include="Form_output.Designer.cs">
       <DependentUpon>Form_output.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_sever.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_sever.Designer.cs">
+      <DependentUpon>Form_sever.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="test.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="test.Designer.cs">
+      <DependentUpon>test.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form_cheek.resx">
       <DependentUpon>Form_cheek.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,6 +105,9 @@
     <EmbeddedResource Include="Form_output.resx">
       <DependentUpon>Form_output.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_sever.resx">
+      <DependentUpon>Form_sever.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -102,6 +117,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="test.resx">
+      <DependentUpon>test.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -127,6 +145,10 @@
     <ProjectReference Include="..\Parameter\Parameter.csproj">
       <Project>{1b771ef4-2b65-47ae-995f-d477c86fa010}</Project>
       <Name>Parameter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PLC_Connection\PLC_Connection.csproj">
+      <Project>{7a41e778-2028-4a94-9f00-42f0623d3736}</Project>
+      <Name>PLC_Connection</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

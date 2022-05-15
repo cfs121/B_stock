@@ -506,7 +506,7 @@ namespace MySQL
         public bool findAll(string order_number,ref List<int>list)
         {
             string mysqlStr = string.Format("select distinct Shelf_number from storage_position where Order_number={0}", order_number);
-            string des_number = "";
+            
             Open();//打开通讯通道
             try
             {
@@ -665,7 +665,119 @@ namespace MySQL
 
         }
 
+        public int getOneQueue(Device device,ref Order order )
+        {
+            string mysqlStr = string.Format("select Order_number,Class,ID from enqueue where Device_number={0} order by Priority,ID ", device.Device_number);
+            Open();//打开通讯通道
+            //创建DataSet类的对象
+           
+            try
+            {
 
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                if (mysqldr.Read())//读到一条
+                {
+                    order.Id =(Int32) mysqldr[2];
+                    order.Class_ = (string)mysqldr[1];
+                    order.orderNumber = (string)mysqldr[0];
+                    Close();
+                    return 0;
+                }
+                else//没有读到
+                {
+                    order.Id = 0;
+                    order.Class_ = "";
+                    order.orderNumber = "";
+
+                    Close();
+                    return 1;
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                order.Id = 0;
+                order.Class_ = "";
+                order.orderNumber = "";
+                Close();
+                return 2;
+            }
+        }
+
+        public string getAllQueue()
+        {
+
+            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级 from enqueue order by Priority,ID");
+            Open();//打开通讯通道
+            //创建DataSet类的对象
+            string queue = "";
+            try
+            {
+
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())
+                {
+                    queue = queue + "编号： " + Convert.ToString(mysqldr[0]) + System.Environment.NewLine +
+                          "类型： " + Convert.ToString(mysqldr[1]) + System.Environment.NewLine +
+                          "优先级" + Convert.ToString(mysqldr[2]) + System.Environment.NewLine + System.Environment.NewLine;
+
+                }
+                Close();
+                return queue;
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return queue;
+            }
+        }
+
+        public string getTask()
+        {
+            string mysqlStr = "select ord.Order_number as 订单号,des.Description_number as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(couout.sum,0) as 已叫,ifnull(couin.sum,0) as 已入 from order_table ord " +
+                "join description_table des on ord.Description_number=des.Description_number " +
+                "join customer_infor cus on des.Customer_number=cus.Customer_number left join " +
+                "(select Order_number,sum(Count) as sum from output_table group by Order_number) " +
+                "couout on ord.Order_number=couout.Order_number left join (select Order_number,sum(Count) " +
+                "as sum from input_table group by Order_number) couin on ord.Order_number=couin.Order_number";
+            Open();//打开通讯通道
+            
+            string queue = "";
+            try
+            {
+
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())
+                {
+                    queue = queue + "订单号： " + mysqldr[0].ToString() + "  " + "品名： " + mysqldr[1].ToString() + "  " + "顾客名： " + mysqldr[2].ToString() + "  " + "总数： " + mysqldr[3].ToString() + "  "+
+                        "已叫： "+mysqldr[4].ToString() + "  "+"已入： "+mysqldr[5].ToString() + System.Environment.NewLine + System.Environment.NewLine;
+
+                }
+                Close();
+                return queue;
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close(); 
+                return queue;
+            }
+
+        }
 
         /// <summary>
         /// 查询该品名是否存在

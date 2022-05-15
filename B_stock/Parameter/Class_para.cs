@@ -109,6 +109,33 @@ namespace Parameter
 
 
     }
+    public struct Order
+    {
+        private int id;
+
+        public int Id
+        {
+            get { return id; }
+            set { id = value; }
+        }
+        private string order_number;
+
+        public string orderNumber
+        {
+            get { return order_number; }
+            set { order_number = value; }
+        }
+        private string class_;
+
+        public string Class_
+        {
+            get { return class_; }
+            set { class_ = value; }
+        }
+
+
+
+    }
     /// <summary>
     /// 用于记录操作员实例
     /// </summary>

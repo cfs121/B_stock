@@ -73,5 +73,17 @@ namespace B_stock
         {
             Application.Exit();
         }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Form test = new test();
+            test.Show();
+        }
+
+        private void 服务端ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form_sever form_Sever = new Form_sever(oper_);
+            Showform(form_Sever);
+        }
     }
 }

@@ -14,22 +14,26 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Reflection;
-
+using PLC_Connection;
 namespace B_stock
 {
     public partial class Form_output : Form
     {
         //界面初始化所用的系列函数
 
-          //全局通用的变量
-        oper_emp oper_Emp = new oper_emp();
-        Device nowDevice = new Device();
-         
+        //全局通用的变量
+        oper_emp oper_Emp = new oper_emp();//全局通用员工属性
+        Device nowDevice = new Device();//全局通用设备属性
+        //存储货架的基本信息
         List<int> shelfList = new List<int>();
         Dictionary<int, shelf> shelfDic = new Dictionary<int, shelf>();
-
+        //与图形化显示相关
         List<PictureBox> pictureList = new List<PictureBox>();
         List<int> InquiredShelf = new List<int>();
+        //记录已经被点击到的订单号
+        List<string> orderNumber_list = new List<string>();
+        DataTable waitSetTable = new DataTable();
+        //用于查询的注销
         private static bool inquired;
         private static bool Inquired
         {
@@ -41,7 +45,22 @@ namespace B_stock
         /// 建立通讯的socket
         /// </summary>
         Socket socketSent;
+        /// <summary>
+        /// 后台收发socket数据
+        /// </summary>
         Thread socketTH;
+        /// <summary>
+        /// 执行控制指令
+        /// </summary>
+        Thread order;
+        /// <summary>
+        /// 后台执行将队列中的指令执行
+        /// </summary>
+        Thread autoqueue;
+        /// <summary>
+        /// 声明一个用于PLC通讯间的接口，利用接口实现不同的通讯组件的使用
+        /// </summary>
+        PLC_Connection.PLC_Connection plc_con;
 
 
         public void setComblist(List<string> list)
@@ -174,14 +193,30 @@ namespace B_stock
         }
         public void initDataGrid()
         {
+            //增加单选列表
             DataGridViewCheckBoxColumn ChCol = new DataGridViewCheckBoxColumn();
             ChCol.Name = "CheckBoxRow";
             ChCol.HeaderText = "选择";
-            ChCol.Width = 50;
+            ChCol.Width = 65;
             ChCol.TrueValue = "1";
             ChCol.FalseValue = "0";
             dataGridView1.Columns.Insert(0, ChCol);
+            //初始化数据表
+           
+            waitSetTable.Columns.Add("订单号", typeof(string));
+            waitSetTable.Columns.Add("品名号", typeof(string));
+            waitSetTable.Clear();
+            dataGridView2.DataSource = waitSetTable;
 
+            DataGridViewComboBoxColumn boxColumn = new DataGridViewComboBoxColumn();
+            boxColumn.Name = "count";
+            boxColumn.HeaderText = "数量/（垛）";
+            boxColumn.Items.Add("1");
+            boxColumn.Items.Add("2");
+            boxColumn.Items.Add("3");
+            boxColumn.Items.Add("4");
+            boxColumn.Items.Add("5");
+            dataGridView2.Columns.Add(boxColumn);
 
         }
         public void setDataGrid()
@@ -198,6 +233,7 @@ namespace B_stock
             {
                 MessageBox.Show("获取排单信息失败", "提示");
             }
+            
         }
 
 
@@ -262,44 +298,126 @@ namespace B_stock
             label14.Text = text;
         }
 
-        //*****************************************************************************************************************************************//
-        //辅助函数
-        /// <summary>
-        /// 删除指定控件的指定事件
-        /// </summary>
-        /// <param name="control"></param>
-        /// <param name="eventname"></param>
-        public void ClearEvent(System.Windows.Forms.Control control, string eventname)
+    //*****************************************************************************************************************************************//
+    //辅助函数
+    /// <summary>
+    /// 删除指定控件的指定事件
+    /// </summary>
+    /// <param name="control"></param>
+    /// <param name="eventname"></param>
+    public void ClearEvent(System.Windows.Forms.Control control, string eventname)
+    {
+        if (control == null) return;
+        if (string.IsNullOrEmpty(eventname)) return;
+
+        BindingFlags mPropertyFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
+        BindingFlags mFieldFlags = BindingFlags.Static | BindingFlags.NonPublic;
+        Type controlType = typeof(System.Windows.Forms.Control);
+        PropertyInfo propertyInfo = controlType.GetProperty("Events", mPropertyFlags);
+        EventHandlerList eventHandlerList = (EventHandlerList)propertyInfo.GetValue(control, null);
+        FieldInfo fieldInfo = (typeof(System.Windows.Forms.Control)).GetField("Event" + eventname, mFieldFlags);
+        Delegate d = eventHandlerList[fieldInfo.GetValue(control)];
+
+        if (d == null) return;
+        EventInfo eventInfo = controlType.GetEvent(eventname);
+
+        foreach (Delegate dx in d.GetInvocationList())
+            eventInfo.RemoveEventHandler(control, dx);
+
+    }
+
+        //*********************************************************************************************************************************************//
+        //线程中用到的函数
+        public int race()
         {
-            if (control == null) return;
-            if (string.IsNullOrEmpty(eventname)) return;
+            int res = plc_con.isEmpty();//防止在进入该函数前有设备写入设备号
+            if (res==0)//再次检查是否为空
+            {
+                plc_con.Write();//写入设备号
+                //延时1秒
+                res = plc_con.Read();//再次读取设备号，看是否一致
+                if (true)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return 1;
+                }
 
-            BindingFlags mPropertyFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
-            BindingFlags mFieldFlags = BindingFlags.Static | BindingFlags.NonPublic;
-            Type controlType = typeof(System.Windows.Forms.Control);
-            PropertyInfo propertyInfo = controlType.GetProperty("Events", mPropertyFlags);
-            EventHandlerList eventHandlerList = (EventHandlerList)propertyInfo.GetValue(control, null);
-            FieldInfo fieldInfo = (typeof(System.Windows.Forms.Control)).GetField("Event" + eventname, mFieldFlags);
-            Delegate d = eventHandlerList[fieldInfo.GetValue(control)];
+            }
+            else if(res==1)
+            {
+                return 1;
+            }
+            else
+            {
+                return res;
+            }
+            
+           
 
-            if (d == null) return;
-            EventInfo eventInfo = controlType.GetEvent(eventname);
 
-            foreach (Delegate dx in d.GetInvocationList())
-                eventInfo.RemoveEventHandler(control, dx);
 
         }
+    public int raceToControl()
+    {
+        MySQL.Select select = new Select();
+        
+        
+        while (true)
+        {
+                Order order_ = new Order();
+                if (select.getOneQueue(nowDevice,ref order_)==0&&
+                  plc_con.isEmpty()==0&& order.IsAlive)//队列为空，PLC不为空，线程order在执行
+                {
+                    //挂起30秒
+                    continue;
+                }
+                else//尝试抢占通道
+                {
+                    if (true)//抢占成功
+                    {
+                        int res = race();
+
+                        if (res == 0)
+                        {
+
+                        }
+                        else if (res == 1) continue;
+                        else
+                        {
+                            //显示错误代码
+                        }
+                        order = new Thread(()=> { });
+                        order.IsBackground = true;
+                        order.Start();
+                    }
+                    else//抢占失败
+                    {
+                        //挂起30秒   
+                        continue; 
+                    } 
+
+                }
+
+        }
+    }
 
 
 
-        //********************************************************************************************************************************//
-        //各类界面事件
 
- /// <summary>
- /// pictureBOX的通用点击事件
- /// </summary>
- /// <param name="sender"></param>
- /// <param name="e"></param>
+
+
+
+    //********************************************************************************************************************************//
+    //各类界面事件
+
+        /// <summary>
+        /// pictureBOX的通用点击事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void box_MouseClick(object sender, MouseEventArgs e)
         {
             PictureBox sentPictureBox = sender as PictureBox;
@@ -334,7 +452,12 @@ namespace B_stock
             //int com=0;
             //select.getSeverInfor(ref add,ref com);
             //startSocket(add,com);
-
+            //实例化通讯接口
+            //plc_con = new MX_com();
+            //if (plc_con.OPEN()!=0)
+            //{
+            //    MessageBox.Show("PLC端通讯连接失败","错误");
+            //}
             //初始化设备选择下拉餐单
             List<string> device = new List<string>();
             select.getDeviceNumber("out", oper_Emp.Emp_number, ref device);
@@ -353,13 +476,13 @@ namespace B_stock
 
             //列表初始化后再增加事件函数
             loadEvent();
-            //初始化排单
+            //初始化数据表
             initDataGrid();
-            //填入数据
+            //数据表中填入数据
             setDataGrid();
             //初始化队列信息
             textBox2.Text = select.getqueue(nowDevice);
-
+            //开启线程
         }
 
         private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
@@ -377,6 +500,7 @@ namespace B_stock
             reEvent();  //重新初始化事件函数
             //初始化排单
             setDataGrid();
+            waitSetTable.Clear();
             //清空之前留下的信息
             textBox3.Text = "";
             textBox4.Text = "";
@@ -417,11 +541,7 @@ namespace B_stock
                             "\n" +
                             "请检查单号是否正确或者原料还未生产完成", "提示");
                         return;
-                    }
-
-
-                    
-
+                    } 
                 }
                 else
                 {
@@ -584,18 +704,25 @@ namespace B_stock
         {
             List<string> order_list = new List<string>();
             List<string> des_name = new List<string>();
+            List<int> des_count = new List<int>(); 
             string st_infro = "";
             //得到勾选序列
-            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            for (int i = 0; i < waitSetTable.Rows.Count; i++)
             {
-                if ((bool)dataGridView1.Rows[i].Cells[0].EditedFormattedValue == true)
+                
+               
+                order_list.Add(waitSetTable.Rows[i].ItemArray[0].ToString());
+                des_name.Add(waitSetTable.Rows[i].ItemArray[1].ToString());
+                if ( dataGridView2.Rows[i].Cells[0].Value==null )
                 {
-                    order_list.Add(dataGridView1.Rows[i].Cells[1].Value.ToString());
-                    des_name.Add(dataGridView1.Rows[i].Cells[2].Value.ToString());
-                    st_infro = st_infro + "订单尾号后4位： " +Convert.ToString(order_list[i]).Substring(order_list[i].Length- 4, 4)+
-                      "   "+ "品名： "+ des_name[i]+"\n";
-                    dataGridView1.Rows[i].Cells[0].Value = false;
+                    MessageBox.Show("有货物没选择需要出库的数量","提示！");
+                    return;
                 }
+                des_count.Add(Convert.ToInt32( dataGridView2.Rows[i].Cells[0].Value));
+                st_infro = st_infro + "订单尾号后4位： " +Convert.ToString(order_list[i]).Substring(order_list[i].Length- 4, 4)+
+                    "   "+ "品名： "+ des_name[i]+"  "+"数量/（垛）"+des_count[i]+"\n";
+                dataGridView1.Rows[i].Cells[0].Value = false;
+                
             }
             if (order_list.Count==0)
             {
@@ -667,20 +794,106 @@ namespace B_stock
                 {
                     continue;
                 }
-                if (insert.insertToEnqueue(nowDevice, order_list[i], "out", 3, oper_Emp))
+                for (int j = 0; j < des_count[i]; j++)
                 {
-                    st_infro = st_infro + order_list[i] + ": "+"信息进入队列成功" +"\n";
+                    if (insert.insertToEnqueue(nowDevice, order_list[i], "out", 3, oper_Emp))
+                    {
+                        st_infro = st_infro + order_list[i] + ": " + "信息进入队列成功" + "\n";
+                    }
+                    else
+                    {
+                        st_infro = st_infro + order_list[i] + ": " + "信息进入队列失败" + "\n";
+                    }
                 }
-                else
-                {
-                    st_infro = st_infro + order_list[i] + ": " + "信息进入队列失败" + "\n";
-                }
+                
             }
             MessageBox.Show(st_infro,"提示");
             textBox2.Text = select.getqueue(nowDevice);
+            //清空勾选框和列表
+            waitSetTable.Clear();
+            orderNumber_list.Clear();
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                dataGridView1.Rows[i].Cells[0].Value = false;
+            }
 
             //发送请求
 
+
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+
+
+
+
+            
+
+
+        }
+
+      
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //判断是否是单选框被改变值
+            if (e.ColumnIndex != 0)
+            {
+                return;
+            }
+            if ((bool)this.dataGridView1.CurrentRow.Cells[0].EditedFormattedValue == true)//被选
+            {
+                if (orderNumber_list.Exists(p => p == this.dataGridView1.CurrentRow.Cells[1].Value.ToString()))
+                {
+                    return;
+                }
+                else
+                {
+                    orderNumber_list.Add(dataGridView1.CurrentRow.Cells[1].Value.ToString());
+                    DataRow dataRow = waitSetTable.NewRow();
+
+                    for (int i = 0; i < 2; i++)
+                    {
+
+                        dataRow[i] = dataGridView1.CurrentRow.Cells[i + 1].Value.ToString();
+                    }
+
+                    waitSetTable.Rows.Add(dataRow.ItemArray);
+
+                }
+            }
+            else//不被勾选 
+            {
+                if (orderNumber_list.Exists(p => p == this.dataGridView1.CurrentRow.Cells[1].Value.ToString()))
+                {
+
+                    for (int i = 0; i < dataGridView2.Rows.Count; i++)
+                    {
+                        if (Convert.ToString(waitSetTable.Rows[i].ItemArray[0]) == dataGridView1.CurrentRow.Cells[1].Value.ToString())
+                        {
+                            waitSetTable.Rows.RemoveAt(i);
+
+
+                        }
+                    }
+                    orderNumber_list.Remove(dataGridView1.CurrentRow.Cells[1].Value.ToString());
+                }
+                else return;
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            waitSetTable.Clear();
+            orderNumber_list.Clear();
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                dataGridView1.Rows[i].Cells[0].Value = false;
+            }
+            textBox3.Text = "";
+            textBox4.Text = "";
 
         }
     }
