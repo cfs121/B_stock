@@ -258,6 +258,8 @@ namespace B_stock
                 socketTH = new Thread(recive);
                 socketTH.IsBackground = true;
                 socketTH.Start();
+                sendStock("1+"+nowDevice.Device_number);//绑定设备号
+
 
 
             }
@@ -283,6 +285,7 @@ namespace B_stock
                         break;
                     }
                     string str = Encoding.UTF8.GetString(buffer, 0, i);
+                    analy(str );
                     
                 }
             }
@@ -293,19 +296,65 @@ namespace B_stock
             }
 
         }
+
+        private void sendStock(string mes)
+        {
+            if (!socketSent.Connected)
+            {
+                MessageBox.Show("连接已断开请勿再发送信息，或者再次打开连接","提示");
+                return;
+            }
+           
+            byte[] buffer = Encoding.UTF8.GetBytes(mes);
+            socketSent.Send(buffer);
+        }
+        private void closeSocket()
+        {
+            //关闭线程
+            if (socketTH != null)
+            {
+                if (socketTH.IsAlive)
+                {
+                    socketTH.Abort();
+                }
+            }
+            //关闭连接
+            socketSent.Shutdown(SocketShutdown.Both);
+            socketSent.Close();
+            showstate("连接断开");
+
+
+        }
         private void showstate(string text)
         {
             label14.Text = text;
         }
 
-    //*****************************************************************************************************************************************//
-    //辅助函数
-    /// <summary>
-    /// 删除指定控件的指定事件
-    /// </summary>
-    /// <param name="control"></param>
-    /// <param name="eventname"></param>
-    public void ClearEvent(System.Windows.Forms.Control control, string eventname)
+        /// <summary>
+        /// 解析发送过来的指令
+        /// </summary>
+        /// <param name="mes"> socket通讯中的套接字</param>
+       
+        private void analy(string mes)
+        {
+            string[] conet = mes.Split('+');//将套接字分割
+            switch (conet[0])
+            {
+                
+                default:
+                    break;
+            }
+
+        }
+
+        //*****************************************************************************************************************************************//
+        //辅助函数
+        /// <summary>
+        /// 删除指定控件的指定事件
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="eventname"></param>
+        public void ClearEvent(System.Windows.Forms.Control control, string eventname)
     {
         if (control == null) return;
         if (string.IsNullOrEmpty(eventname)) return;
@@ -515,7 +564,7 @@ namespace B_stock
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button1_Click(object sender, EventArgs e)
+          private void button1_Click(object sender, EventArgs e)
         {
             if (textBox4.Text=="")
             {
@@ -892,9 +941,14 @@ namespace B_stock
             {
                 dataGridView1.Rows[i].Cells[0].Value = false;
             }
+            
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
             textBox3.Text = "";
             textBox4.Text = "";
-
         }
     }
 

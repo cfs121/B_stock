@@ -742,7 +742,7 @@ namespace MySQL
             }
         }
 
-        public string getTask()
+        public bool getTask(out DataSet dataSet)
         {
             string mysqlStr = "select ord.Order_number as 订单号,des.Description_number as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(couout.sum,0) as 已叫,ifnull(couin.sum,0) as 已入 from order_table ord " +
                 "join description_table des on ord.Description_number=des.Description_number " +
@@ -752,6 +752,37 @@ namespace MySQL
                 "as sum from input_table group by Order_number) couin on ord.Order_number=couin.Order_number";
             Open();//打开通讯通道
             
+          
+            try
+            {
+
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataAdapter mySqlData = new MySqlDataAdapter(mySqlCommand);
+                DataSet ds = new DataSet();
+                mySqlData.Fill(ds, "排单表");
+                dataSet = ds;
+
+
+                Close();
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                dataSet = null;
+                return false;
+            }
+
+        }
+
+        public bool getSocket(out string address,out int com,out int block)
+        {
+            string mysqlStr = string.Format("select socket,COM,block from basic_infor");
+            Open();//打开通讯通道
+            //创建DataSet类的对象
             string queue = "";
             try
             {
@@ -759,25 +790,40 @@ namespace MySQL
                 MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
                 MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
 
-                while (mysqldr.Read())
+                if (mysqldr.Read())
                 {
-                    queue = queue + "订单号： " + mysqldr[0].ToString() + "  " + "品名： " + mysqldr[1].ToString() + "  " + "顾客名： " + mysqldr[2].ToString() + "  " + "总数： " + mysqldr[3].ToString() + "  "+
-                        "已叫： "+mysqldr[4].ToString() + "  "+"已入： "+mysqldr[5].ToString() + System.Environment.NewLine + System.Environment.NewLine;
+                    address = mysqldr[0].ToString();
+                    com = (int)mysqldr[1];
+                    block = (int)mysqldr[2];
+                    Close();
+                    return true;
 
                 }
-                Close();
-                return queue;
+                else
+                {
+                    address = "";
+                    com = 0;
+                    block = 0;
+                    Close();
+                    return false;
+                }
+               
 
             }
             catch (Exception ex)
             {
 
                 MessageBox.Show(ex.ToString());
-                Close(); 
-                return queue;
+                Close();
+                address = "";
+                com = 0;
+                block = 0;
+                return false;
             }
 
         }
+
+
 
         /// <summary>
         /// 查询该品名是否存在
