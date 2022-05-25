@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormToChangeQueue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormToChangeQueue.Designer.cs">
+      <DependentUpon>FormToChangeQueue.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_cheek.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +96,9 @@
     <Compile Include="test.Designer.cs">
       <DependentUpon>test.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="FormToChangeQueue.resx">
+      <DependentUpon>FormToChangeQueue.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_cheek.resx">
       <DependentUpon>Form_cheek.cs</DependentUpon>
     </EmbeddedResource>

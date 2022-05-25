@@ -274,6 +274,35 @@ namespace MySQL
 
         }
 
+        public void getStorageNumber(Device device,string des_number,ref  string mes)
+        {
+            string mysqlStr = string.Format("select count(sp.Order_number),sum(sp.amount) from storage_position sp join shelf_parameter spa " +
+                "on sp.Shelf_number=spa.Shelf_number where spa.Device_out_number='{0}' and sp.Order_number='{1}'", device.Device_number,des_number);
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                if(mysqldr.Read())//读一行
+                {
+                    mes = mes + "库存垛数： " + mysqldr[0].ToString()+System.Environment.NewLine;
+                    mes = mes + "库存总数： " + mysqldr[1].ToString();
+
+                }
+                Close();
+                return;
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return;
+            }
+
+        }
+
         public bool findForClick( ref string inf, PictureBox box, shelf shelf, int y)
         {
             decimal ratioY = (decimal)y / box.Size.Height;
@@ -599,7 +628,7 @@ namespace MySQL
 
         public string getqueue(Device device)
         {
-            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级 from enqueue where Device_number={0} order by Priority,ID",device.Device_number);
+            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级 from enqueue where Device_number={0} and Status=0 order by Priority,ID",device.Device_number);
             Open();//打开通讯通道
             //创建DataSet类的对象
             string queue = "";
@@ -626,6 +655,38 @@ namespace MySQL
                 MessageBox.Show(ex.ToString());
                 Close();
                 return queue;
+            }
+
+        }
+
+        public bool getqueue(Device device, out DataSet data)
+        {
+            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级,Status as 状态 from enqueue where Device_number={0} " +
+                "and Status!=2 order by Priority,ID", device.Device_number);
+
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataAdapter mySqlData = new MySqlDataAdapter(mySqlCommand);
+                DataSet ds = new DataSet();
+                mySqlData.Fill(ds, "队列表");
+                data = ds;
+
+
+                Close();
+                return true;
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                data = null;
+                return false;
             }
 
         }
