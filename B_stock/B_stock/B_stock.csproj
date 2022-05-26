@@ -32,7 +32,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Non-Commodity Inventory.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DevComponents.DotNetBar2, Version=14.1.0.37, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -125,6 +129,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="test.resx">
       <DependentUpon>test.cs</DependentUpon>
@@ -159,6 +164,21 @@
       <Project>{7a41e778-2028-4a94-9f00-42f0623d3736}</Project>
       <Name>PLC_Connection</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\11.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\21.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Non-Commodity Inventory.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

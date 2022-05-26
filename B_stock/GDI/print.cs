@@ -332,7 +332,7 @@ namespace GDI
         int intercept = 4;//字符串末尾截取长度
         public override Bitmap StoreMap(shelf shelf, PictureBox box, List<string> coodsOf, List<int> lengthOf, List<int> widthOf)
         {
-            int pt = Convert.ToInt32(25 * ((decimal)60 / box.Width));//图例字体大小-像素
+            int pt = Convert.ToInt32(25 * ((decimal)90 / box.Width));//图例字体大小-像素
 
 
             string ident = "";
