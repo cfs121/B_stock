@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormToChangeQueue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormToChangeQueue.Designer.cs">
+      <DependentUpon>FormToChangeQueue.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_cheek.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,6 +96,9 @@
     <Compile Include="test.Designer.cs">
       <DependentUpon>test.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="FormToChangeQueue.resx">
+      <DependentUpon>FormToChangeQueue.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_cheek.resx">
       <DependentUpon>Form_cheek.cs</DependentUpon>
     </EmbeddedResource>
@@ -116,6 +125,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="test.resx">
       <DependentUpon>test.cs</DependentUpon>
@@ -150,6 +160,18 @@
       <Project>{7a41e778-2028-4a94-9f00-42f0623d3736}</Project>
       <Name>PLC_Connection</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\2.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\11.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\21.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -208,6 +208,7 @@ namespace B_stock
             waitSetTable.Clear();
             dataGridView2.DataSource = waitSetTable;
 
+
             DataGridViewComboBoxColumn boxColumn = new DataGridViewComboBoxColumn();
             boxColumn.Name = "count";
             boxColumn.HeaderText = "数量/（垛）";
@@ -347,6 +348,8 @@ namespace B_stock
 
         }
 
+
+
         //*****************************************************************************************************************************************//
         //辅助函数
         /// <summary>
@@ -355,25 +358,31 @@ namespace B_stock
         /// <param name="control"></param>
         /// <param name="eventname"></param>
         public void ClearEvent(System.Windows.Forms.Control control, string eventname)
-    {
-        if (control == null) return;
-        if (string.IsNullOrEmpty(eventname)) return;
+        {
+            if (control == null) return;
+            if (string.IsNullOrEmpty(eventname)) return;
 
-        BindingFlags mPropertyFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
-        BindingFlags mFieldFlags = BindingFlags.Static | BindingFlags.NonPublic;
-        Type controlType = typeof(System.Windows.Forms.Control);
-        PropertyInfo propertyInfo = controlType.GetProperty("Events", mPropertyFlags);
-        EventHandlerList eventHandlerList = (EventHandlerList)propertyInfo.GetValue(control, null);
-        FieldInfo fieldInfo = (typeof(System.Windows.Forms.Control)).GetField("Event" + eventname, mFieldFlags);
-        Delegate d = eventHandlerList[fieldInfo.GetValue(control)];
+            BindingFlags mPropertyFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic;
+            BindingFlags mFieldFlags = BindingFlags.Static | BindingFlags.NonPublic;
+            Type controlType = typeof(System.Windows.Forms.Control);
+            PropertyInfo propertyInfo = controlType.GetProperty("Events", mPropertyFlags);
+            EventHandlerList eventHandlerList = (EventHandlerList)propertyInfo.GetValue(control, null);
+            FieldInfo fieldInfo = (typeof(System.Windows.Forms.Control)).GetField("Event" + eventname, mFieldFlags);
+            Delegate d = eventHandlerList[fieldInfo.GetValue(control)];
 
-        if (d == null) return;
-        EventInfo eventInfo = controlType.GetEvent(eventname);
+            if (d == null) return;
+            EventInfo eventInfo = controlType.GetEvent(eventname);
 
-        foreach (Delegate dx in d.GetInvocationList())
-            eventInfo.RemoveEventHandler(control, dx);
+            foreach (Delegate dx in d.GetInvocationList())
+                eventInfo.RemoveEventHandler(control, dx);
 
-    }
+        }
+
+       
+        public static void DownDataGridView(DataGridView dataGridView)
+        {
+            
+        }
 
         //*********************************************************************************************************************************************//
         //线程中用到的函数
@@ -409,7 +418,7 @@ namespace B_stock
 
 
         }
-    public int raceToControl()
+        public int raceToControl()
     {
         MySQL.Select select = new Select();
         
@@ -488,8 +497,57 @@ namespace B_stock
         {
             oper_Emp = login_emp;
             InitializeComponent();
+            //获得当前窗口大小信息
+            x = this.Width;
+            y = this.Height;
+            setTag(this);
+        }
+        
+        #region 控件大小随窗体大小等比例缩放
+        private float x;//定义当前窗体的宽度
+        private float y;//定义当前窗体的高度
+        private void setTag(Control cons)
+        {
+            foreach (Control con in cons.Controls)
+            {
+                con.Tag = con.Width + ";" + con.Height + ";" + con.Left + ";" + con.Top + ";" + con.Font.Size;
+                if (con.Controls.Count > 0)
+                {
+                    setTag(con);
+                }
+            }
+        }
+        private void setControls(float newx, float newy, Control cons)
+        {
+            //遍历窗体中的控件，重新设置控件的值
+            foreach (Control con in cons.Controls)
+            {
+                //获取控件的Tag属性值，并分割后存储字符串数组
+                if (con.Tag != null)
+                {
+                    string[] mytag = con.Tag.ToString().Split(new char[] { ';' });
+                    //根据窗体缩放的比例确定控件的值
+                    con.Width = Convert.ToInt32(System.Convert.ToSingle(mytag[0]) * newx);//宽度
+                    con.Height = Convert.ToInt32(System.Convert.ToSingle(mytag[1]) * newy);//高度
+                    con.Left = Convert.ToInt32(System.Convert.ToSingle(mytag[2]) * newx);//左边距
+                    con.Top = Convert.ToInt32(System.Convert.ToSingle(mytag[3]) * newy);//顶边距
+                    Single currentSize = System.Convert.ToSingle(mytag[4]) * newy;//字体大小
+                    con.Font = new Font(con.Font.Name, currentSize, con.Font.Style, con.Font.Unit);
+                    if (con.Controls.Count > 0)
+                    {
+                        setControls(newx, newy, con);
+                    }
+                }
+            }
+        }
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            float newx = (this.Width) / x;
+            float newy = (this.Height) / y;
+            setControls(newx, newy, this);
         }
 
+        #endregion
         private void Form_output_Load(object sender, EventArgs e)
         {
             Form.CheckForIllegalCrossThreadCalls = false;//允许其它线程
@@ -671,6 +729,11 @@ namespace B_stock
                             pictureList[index].Image = print.StoreMap(shelfDic[shelfList[index]],pictureList[index],textBox4.Text,coods,length,width);
 
                         }
+                        string mess="";
+                        select.getStorageNumber(nowDevice, textBox4.Text,ref mess);
+                        textBox3.Text = mess;
+
+
 
                     }
                     else
@@ -696,7 +759,8 @@ namespace B_stock
                 }
                 InquiredShelf = null;
                 Inquired = false;
-                textBox3.Text = ""  ;
+                select.FindOrderInfro(textBox4.Text, ref inf, ref deviceIn, ref desviceOut);
+                textBox3.Text = inf ;
             }
 
            
@@ -871,17 +935,7 @@ namespace B_stock
 
         }
 
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-
-
-
-
-            
-
-
-        }
+        
 
       
 
@@ -945,10 +999,133 @@ namespace B_stock
 
         }
 
+       
+
+        /// <summary>
+        /// 使TEXTBOX的内容置于最低
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+            this.textBox2.SelectionStart = this.textBox2.Text.Length;
+            this.textBox2.ScrollToCaret();
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            Form formtochang = new FormToChangeQueue(nowDevice);
+            formtochang.Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            waitSetTable.Clear();
+            orderNumber_list.Clear();
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                dataGridView1.Rows[i].Cells[0].Value = true;
+                orderNumber_list.Add(dataGridView1.Rows[i].Cells[1].Value.ToString());
+                DataRow dataRow = waitSetTable.NewRow();
+
+                for (int j = 0; j < 2; j++)
+                {
+
+                    dataRow[j] = dataGridView1.Rows[i].Cells[j + 1].Value.ToString();
+                }
+
+                waitSetTable.Rows.Add(dataRow.ItemArray);
+            }
+
+
+        }
+
+        /// <summary>
+        /// 下移
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dataGridView2.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("没有选中行");
+                    return;
+                }
+                int index = dataGridView2.SelectedRows[0].Index;//获取当前选中行的索引
+                if ((dataGridView2.RowCount-2) != index)//如果该行不是最后一行
+                {
+                    DataRow row = waitSetTable.NewRow();
+                    row.ItemArray = waitSetTable.Rows[index + 1].ItemArray;
+                    waitSetTable.Rows[index + 1].ItemArray = waitSetTable.Rows[index].ItemArray;
+                    waitSetTable.Rows[index].ItemArray = row.ItemArray;
+                    dataGridView2.Rows[index + 1].Selected = true;
+                    dataGridView2.Rows[index].Selected = false;
+                }
+                else
+                {
+                    MessageBox.Show("已是最后一行！","提示");
+                }
+
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+        /// <summary>
+        /// 上移
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button4_Click(object sender, EventArgs e)
         {
-            textBox3.Text = "";
-            textBox4.Text = "";
+            try
+            {
+                //防止没有选中行
+                if (dataGridView2.SelectedRows.Count==0)
+                {
+                    MessageBox.Show("没有选中行");
+                    return;
+                }
+                
+                int index = dataGridView2.SelectedRows[0].Index;//获取当前选中行的索引
+                if (index == dataGridView2.RowCount-1)
+                {
+                    MessageBox.Show("请勿选择空白行");
+                    return;
+                }
+                if (index > 0)//如果该行不是第一行
+                {
+                    
+                    DataRow row = waitSetTable.NewRow();
+                    row.ItemArray = waitSetTable.Rows[index - 1].ItemArray;
+                    waitSetTable.Rows[index - 1].ItemArray = waitSetTable.Rows[index].ItemArray;
+                    waitSetTable.Rows[index].ItemArray = row.ItemArray;
+                    dataGridView2.Rows[index - 1].Selected = true;
+                    dataGridView2.Rows[index].Selected = false;
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show("已是首行！", "提示");
+                }
+               
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
     }
 
