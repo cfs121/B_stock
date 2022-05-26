@@ -35,16 +35,17 @@
             this.入库端ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.出库端ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.确认端ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.服务端ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.整体监控ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.数据ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.测试ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.服务端ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.整体监控ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.AutoScroll = true;
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 28);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -88,23 +89,36 @@
             // 入库端ToolStripMenuItem
             // 
             this.入库端ToolStripMenuItem.Name = "入库端ToolStripMenuItem";
-            this.入库端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.入库端ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
             this.入库端ToolStripMenuItem.Text = "入库端";
             this.入库端ToolStripMenuItem.Click += new System.EventHandler(this.入库端ToolStripMenuItem_Click);
             // 
             // 出库端ToolStripMenuItem
             // 
             this.出库端ToolStripMenuItem.Name = "出库端ToolStripMenuItem";
-            this.出库端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.出库端ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
             this.出库端ToolStripMenuItem.Text = "出库端";
             this.出库端ToolStripMenuItem.Click += new System.EventHandler(this.出库端ToolStripMenuItem_Click);
             // 
             // 确认端ToolStripMenuItem
             // 
             this.确认端ToolStripMenuItem.Name = "确认端ToolStripMenuItem";
-            this.确认端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
+            this.确认端ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
             this.确认端ToolStripMenuItem.Text = "确认端";
             this.确认端ToolStripMenuItem.Click += new System.EventHandler(this.确认端ToolStripMenuItem_Click);
+            // 
+            // 服务端ToolStripMenuItem
+            // 
+            this.服务端ToolStripMenuItem.Name = "服务端ToolStripMenuItem";
+            this.服务端ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
+            this.服务端ToolStripMenuItem.Text = "服务端";
+            this.服务端ToolStripMenuItem.Click += new System.EventHandler(this.服务端ToolStripMenuItem_Click);
+            // 
+            // 整体监控ToolStripMenuItem
+            // 
+            this.整体监控ToolStripMenuItem.Name = "整体监控ToolStripMenuItem";
+            this.整体监控ToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
+            this.整体监控ToolStripMenuItem.Text = "整体监控";
             // 
             // 数据ToolStripMenuItem
             // 
@@ -126,19 +140,6 @@
             this.toolStripMenuItem2.Size = new System.Drawing.Size(93, 26);
             this.toolStripMenuItem2.Text = "1";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
-            // 
-            // 服务端ToolStripMenuItem
-            // 
-            this.服务端ToolStripMenuItem.Name = "服务端ToolStripMenuItem";
-            this.服务端ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
-            this.服务端ToolStripMenuItem.Text = "服务端";
-            this.服务端ToolStripMenuItem.Click += new System.EventHandler(this.服务端ToolStripMenuItem_Click);
-            // 
-            // 整体监控ToolStripMenuItem
-            // 
-            this.整体监控ToolStripMenuItem.Name = "整体监控ToolStripMenuItem";
-            this.整体监控ToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
-            this.整体监控ToolStripMenuItem.Text = "整体监控";
             // 
             // Form_major
             // 

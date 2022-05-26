@@ -29,6 +29,7 @@ namespace B_stock
         //存入连接上的客户端监听的线程
         Dictionary<string, Thread> clientThread = new Dictionary<string, Thread>();
         List<string> test = new List<string>();
+        Thread scan ;
 
 
 
@@ -61,7 +62,7 @@ namespace B_stock
                 {
                     socketReceive = socketWatch.Accept();
                     clientSocket.Add(socketReceive.RemoteEndPoint.ToString(), socketReceive);
-                    comboBox1.Items.Add(socketReceive.RemoteEndPoint.ToString());
+                    comboBox2.Items.Add(socketReceive.RemoteEndPoint.ToString()); 
                     test.Add(socketReceive.RemoteEndPoint.ToString());
                     showMes(socketReceive.RemoteEndPoint.ToString() + ": 连接成功");
                     Thread th = new Thread(socketSent);
@@ -134,7 +135,7 @@ namespace B_stock
                                 {
                                     //正常断开连接；
                                     showMes(tempSocket.RemoteEndPoint.ToString() + ": 正常断开连接");
-                                    comboBox1.Items.Remove(tempSocket.RemoteEndPoint.ToString());
+                                    comboBox2.Items.Remove(tempSocket.RemoteEndPoint.ToString());
                                     clientSocket.Remove(test[i]);
                                     test.Remove(test[i]);
                                 }
@@ -142,7 +143,7 @@ namespace B_stock
                             catch
                             {
                                 showMes(tempSocket.RemoteEndPoint.ToString() + ": 异常断开连接");
-                                comboBox1.Items.Remove(tempSocket.RemoteEndPoint.ToString());
+                                comboBox2.Items.Remove(tempSocket.RemoteEndPoint.ToString());
                                 clientSocket.Remove(test[i]);
                                 test.Remove(test[i]);
                             }
@@ -168,6 +169,13 @@ namespace B_stock
             {
                 case "1"://指定设备号，用作初始socket建立时
                     deviceClient.Add(conet[1],address);
+                    label2.Text = label2.Text + ";" + conet[1];
+                    return;
+                case "2"://有指令写入
+                    if (scan.ThreadState==ThreadState.WaitSleepJoin)
+                    {
+                        scan.Start();
+                    }
                     return;
                 default:
                     break;
@@ -228,5 +236,13 @@ namespace B_stock
             }
            
         }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            this.textBox4.SelectionStart = this.textBox4.Text.Length;
+            this.textBox4.ScrollToCaret();
+        }
+
+       
     }
 }
