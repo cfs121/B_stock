@@ -97,6 +97,7 @@ namespace B_stock
             pictureList.Add(pictureBox10);
             pictureList.Add(pictureBox11);
             pictureList.Add(pictureBox12);
+         
             labels.Add(label8);
             labels.Add(label9);
             labels.Add(label10);
