@@ -803,8 +803,22 @@ namespace B_stock
 
         private void button5_Click(object sender, EventArgs e)
         {
-            textBox3.Text = "";
-            textBox4.Text = "";
+            waitSetTable.Clear();
+            orderNumber_list.Clear();
+            for (int i = 0; i < dataGridView1.Rows.Count; i++)
+            {
+                dataGridView1.Rows[i].Cells[0].Value = true;
+                orderNumber_list.Add(dataGridView1.Rows[i].Cells[1].Value.ToString());
+                DataRow dataRow = waitSetTable.NewRow();
+
+                for (int j = 0; j < 2; j++)
+                {
+
+                    dataRow[j] = dataGridView1.Rows[i].Cells[j + 1].Value.ToString();
+                }
+
+                waitSetTable.Rows.Add(dataRow.ItemArray);
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -814,6 +828,84 @@ namespace B_stock
             for (int i = 0; i < dataGridView1.Rows.Count; i++)
             {
                 dataGridView1.Rows[i].Cells[0].Value = false;
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //防止没有选中行
+                if (dataGridView2.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("没有选中行");
+                    return;
+                }
+
+                int index = dataGridView2.SelectedRows[0].Index;//获取当前选中行的索引
+                if (index == dataGridView2.RowCount - 1)
+                {
+                    MessageBox.Show("请勿选择空白行");
+                    return;
+                }
+                if (index > 0)//如果该行不是第一行
+                {
+
+                    DataRow row = waitSetTable.NewRow();
+                    row.ItemArray = waitSetTable.Rows[index - 1].ItemArray;
+                    waitSetTable.Rows[index - 1].ItemArray = waitSetTable.Rows[index].ItemArray;
+                    waitSetTable.Rows[index].ItemArray = row.ItemArray;
+                    dataGridView2.Rows[index - 1].Selected = true;
+                    dataGridView2.Rows[index].Selected = false;
+
+
+
+                }
+                else
+                {
+                    MessageBox.Show("已是首行！", "提示");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dataGridView2.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("没有选中行");
+                    return;
+                }
+                int index = dataGridView2.SelectedRows[0].Index;//获取当前选中行的索引
+                if ((dataGridView2.RowCount - 2) != index)//如果该行不是最后一行
+                {
+                    DataRow row = waitSetTable.NewRow();
+                    row.ItemArray = waitSetTable.Rows[index + 1].ItemArray;
+                    waitSetTable.Rows[index + 1].ItemArray = waitSetTable.Rows[index].ItemArray;
+                    waitSetTable.Rows[index].ItemArray = row.ItemArray;
+                    dataGridView2.Rows[index + 1].Selected = true;
+                    dataGridView2.Rows[index].Selected = false;
+                }
+                else
+                {
+                    MessageBox.Show("已是最后一行！", "提示");
+                }
+
+
+
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
     }
