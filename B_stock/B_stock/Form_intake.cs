@@ -460,7 +460,7 @@ namespace B_stock
             //填入数据
             setDataGrid();
             //初始化队列信息
-            textBox2.Text = select.getqueue(nowDevice);
+            textBox2.Text = select.getqueue2(nowDevice);
         }
         public void initDataGrid()
         {
@@ -494,15 +494,16 @@ namespace B_stock
 
             MySQL.Select select = new Select();
             DataSet dataSet = new DataSet();
-            if (select.takeOrders(nowDevice, "in", out dataSet))
+            if (select.getQueue(nowDevice, "in", out dataSet))
             {
                 dataGridView1.DataSource = dataSet.Tables[0];
-
+                
             }
             else
             {
                 MessageBox.Show("获取排单信息失败", "提示");
             }
+            
         }
         private void label1_Click(object sender, EventArgs e)
         {
@@ -529,7 +530,7 @@ namespace B_stock
             textBox3.Text = "";
             textBox4.Text = "";
             //初始化队列信息
-            textBox2.Text = select.getqueue(nowDevice);
+            textBox2.Text = select.getqueue2(nowDevice);
 
         }
 
@@ -553,7 +554,7 @@ namespace B_stock
                     if (insert.insertToEnqueue(nowDevice, textBox4.Text, "in", 3, oper_Emp))
                     {
                         MessageBox.Show("信息进入队列成功", "提示");
-                        textBox2.Text = select.getqueue(nowDevice);
+                        textBox2.Text = select.getqueue2(nowDevice);
                     }
 
                     //发送请求
@@ -726,7 +727,7 @@ namespace B_stock
 
             }
             MessageBox.Show(st_infro, "提示");
-            textBox2.Text = select.getqueue(nowDevice);
+            textBox2.Text = select.getqueue2(nowDevice);
             //清空勾选框和列表
             waitSetTable.Clear();
             orderNumber_list.Clear();
@@ -908,6 +909,13 @@ namespace B_stock
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            Form formtochang = new FormToChangeQueue(nowDevice);
+            formtochang.TopMost = true;
+            formtochang.Show();
         }
     }
 }

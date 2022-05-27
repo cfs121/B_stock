@@ -572,6 +572,7 @@ namespace MySQL
         {
             string de_class = "";
             string table = "";
+            string name = "";
             //分辨设备类型，SQL语句中有区分
             if (dev_class == "out" || dev_class == "in")
             {
@@ -579,11 +580,13 @@ namespace MySQL
                 {
                     de_class ="Device_out_number";
                     table = "output_table";
+                    name = "已出库";
                 }
                 else
                 {
                     de_class = "Device_in_number";
                     table = "input_table";
+                    name = "已入库";
                 }
             }
             else
@@ -592,13 +595,13 @@ namespace MySQL
                 data = null;
                 return false;
             }
-            
-            string mysqlStr = string.Format("select ord.Order_number as 订单号,des.Description_name as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(cou.sum,0) as 已叫 " +
+
+            string mysqlStr = string.Format("select ord.Order_number as 订单号,des.Description_name as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(cou.sum,0) as {0}  " +
                 "from order_table ord join description_table des on ord.Description_number=des.Description_number " +
                 "join customer_infor cus on des.Customer_number=cus.Customer_number " +
-                "left join (select Order_number,sum(Count) as sum from {0} group by Order_number) cou " +
-                "on ord.Order_number=cou.Order_number where ord.{1}={2};",table,de_class,device.Device_number);
-           
+                "left join (select Order_number,sum(Count) as sum from {1} group by Order_number) cou " +
+                "on ord.Order_number=cou.Order_number where ord.{2}={3};",name, table, de_class, device.Device_number);
+
             Open();//打开通讯通道
             try
             {
@@ -624,7 +627,62 @@ namespace MySQL
                 return false;
             }
         }
+        public bool getQueue(Device device, string dev_class, out DataSet data)
+        {
+            string de_class = "";
+            string table = "";
+            //分辨设备类型，SQL语句中有区分
+            if (dev_class == "out" || dev_class == "in")
+            {
+                if (dev_class == "out")
+                {
+                    de_class = "Device_out_number";
+                    table = "output_table";
+                }
+                else
+                {
+                    de_class = "Device_in_number";
+                    table = "input_table";
+                }
+            }
+            else
+            {
+                MessageBox.Show("在读取排单状态时有未知的设备类型", "错误");
+                data = null;
+                return false;
+            }
+            string mysqlStr = string.Format("select ord.Order_number as 订单号,des.Description_name as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(enqueue.sum,0) as 已请求,ifnull(cou.sum,0) as 已入库 " +
+                 "from order_table ord join description_table des on ord.Description_number=des.Description_number " +
+                 "join customer_infor cus on des.Customer_number=cus.Customer_number " +
+                 "join (select Order_number,count(Order_number) as sum from enqueue group by Order_number) enqueue on ord.Order_number=enqueue.Order_number " +
+                 "left join (select Order_number,sum(Count) as sum from {0} group by Order_number) cou " +
+                 "on ord.Order_number=cou.Order_number where ord.{1}={2};", table, de_class, device.Device_number);
 
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataAdapter mySqlData = new MySqlDataAdapter(mySqlCommand);
+                DataSet ds = new DataSet();
+                mySqlData.Fill(ds, "排单表2");
+                data = ds;
+
+
+                Close();
+                return true;
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                data = null;
+                return false;
+            }
+        }
 
         public string getqueue(Device device)
         {
@@ -658,10 +716,43 @@ namespace MySQL
             }
 
         }
+        public string getqueue2(Device device)
+        {
+            string mysqlStr = string.Format("select Order_number as 订单编号,Priority as 优先级 from enqueue where Device_number={0} and Status=0 order by Priority,ID", device.Device_number);
+            Open();//打开通讯通道
+            //创建DataSet类的对象
+            string queue = "";
+            try
+            {
 
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
+
+                while (mysqldr.Read())
+                {
+                    queue = queue + "编号： " + Convert.ToString(mysqldr[0]) + System.Environment.NewLine +
+                       
+                       
+                          //"类型： " + Convert.ToString(mysqldr[1]) + System.Environment.NewLine +
+                          "优先级" + Convert.ToString(mysqldr[1]) + System.Environment.NewLine + System.Environment.NewLine;
+
+                }
+                Close();
+                return queue;
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return queue;
+            }
+
+        }
         public bool getqueue(Device device, out DataSet data)
         {
-            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级,Status as 状态 from enqueue where Device_number={0} " +
+            string mysqlStr = string.Format("select ID as 主键,Order_number as 订单编号,Class as 类型,Priority as 优先级,Status as 状态 from enqueue where Device_number={0} " +
                 "and Status!=2 order by Priority,ID", device.Device_number);
 
             Open();//打开通讯通道
@@ -1082,7 +1173,59 @@ namespace MySQL
 
     public class Delet : Connection
     {
+        public bool  de_queue(int id)
+        {
+            string mysqlStr = string.Format("select Status from enqueue where ID={0}", id);
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
 
+                if (mysqldr.Read() == true)//读到数据,存在该数据
+                {
+                    if ((Int32)mysqldr[0]==2)
+                    {
+                        MessageBox.Show("该指令正在执行","提示");
+                        return false;
+                    }
+                    if ((Int32)mysqldr[0] == 1)
+                    {
+                        MessageBox.Show("该指令已经执行完成", "提示");
+                        return false;
+                    }
+                    mysqldr.Close();
+
+                    mysqlStr = string.Format("delete from enqueue where ID={0}",id );
+                    mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                    if (mySqlCommand.ExecuteNonQuery() > 0)
+                    {
+                        Close();
+                        return true ;
+                    }
+                    else
+                    {
+                        MessageBox.Show("数据库enqueue删除数据失败，0行成功" + "'/n'" + mysqlStr, "错误");
+                        Close();
+                        return false  ;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("队列表中无该ID主键的指令", "提示");
+                    Close();
+                    return false ;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return false ;
+            }
+        }
     }
     /// <summary>
     /// 混合类的SQL

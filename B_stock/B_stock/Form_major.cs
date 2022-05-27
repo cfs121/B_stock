@@ -139,7 +139,7 @@ namespace B_stock
         private void Form_major_Load(object sender, EventArgs e)
         {
             //窗体最大化
-            this.TopMost = true;
+            
             this.MaximizedBounds = Screen.PrimaryScreen.WorkingArea;  //显示任务栏
             this.WindowState = FormWindowState.Maximized;
         }
