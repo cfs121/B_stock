@@ -853,7 +853,7 @@ namespace B_stock
                 return;
             }
             //后台确认可行序列
-            string inf = "";
+            string inf = ""; 
             string deviceIn = "";
             string desviceOut = "";
             st_infro = "";
@@ -1016,7 +1016,9 @@ namespace B_stock
         private void label2_Click(object sender, EventArgs e)
         {
             Form formtochang = new FormToChangeQueue(nowDevice);
+            formtochang.TopMost = true;
             formtochang.Show();
+            
         }
 
         private void button5_Click(object sender, EventArgs e)

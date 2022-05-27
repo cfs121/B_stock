@@ -661,7 +661,7 @@ namespace MySQL
 
         public bool getqueue(Device device, out DataSet data)
         {
-            string mysqlStr = string.Format("select Order_number as 订单编号,Class as 类型,Priority as 优先级,Status as 状态 from enqueue where Device_number={0} " +
+            string mysqlStr = string.Format("select ID as 主键,Order_number as 订单编号,Class as 类型,Priority as 优先级,Status as 状态 from enqueue where Device_number={0} " +
                 "and Status!=2 order by Priority,ID", device.Device_number);
 
             Open();//打开通讯通道
@@ -1082,7 +1082,59 @@ namespace MySQL
 
     public class Delet : Connection
     {
+        public bool  de_queue(int id)
+        {
+            string mysqlStr = string.Format("select Status from enqueue where ID={0}", id);
+            Open();//打开通讯通道
+            try
+            {
+                MySqlCommand mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                MySqlDataReader mysqldr = mySqlCommand.ExecuteReader();
 
+                if (mysqldr.Read() == true)//读到数据,存在该数据
+                {
+                    if ((Int32)mysqldr[0]==2)
+                    {
+                        MessageBox.Show("该指令正在执行","提示");
+                        return false;
+                    }
+                    if ((Int32)mysqldr[0] == 1)
+                    {
+                        MessageBox.Show("该指令已经执行完成", "提示");
+                        return false;
+                    }
+                    mysqldr.Close();
+
+                    mysqlStr = string.Format("delete from enqueue where ID={0}",id );
+                    mySqlCommand = new MySqlCommand(mysqlStr, mycon);
+                    if (mySqlCommand.ExecuteNonQuery() > 0)
+                    {
+                        Close();
+                        return true ;
+                    }
+                    else
+                    {
+                        MessageBox.Show("数据库enqueue删除数据失败，0行成功" + "'/n'" + mysqlStr, "错误");
+                        Close();
+                        return false  ;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("队列表中无该ID主键的指令", "提示");
+                    Close();
+                    return false ;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show(ex.ToString());
+                Close();
+                return false ;
+            }
+        }
     }
     /// <summary>
     /// 混合类的SQL
