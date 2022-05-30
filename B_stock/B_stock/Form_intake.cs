@@ -917,5 +917,10 @@ namespace B_stock
             formtochang.TopMost = true;
             formtochang.Show();
         }
+
+        private void pictureBox17_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

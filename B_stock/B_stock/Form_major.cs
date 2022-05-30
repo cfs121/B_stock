@@ -143,5 +143,10 @@ namespace B_stock
             this.MaximizedBounds = Screen.PrimaryScreen.WorkingArea;  //显示任务栏
             this.WindowState = FormWindowState.Maximized;
         }
+
+        private void 整体监控ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

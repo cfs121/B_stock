@@ -179,6 +179,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Non-Commodity Inventory.ico" />
+    <None Include="Resources\图片11.png" />
+    <None Include="Resources\传送带1.PNG" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
