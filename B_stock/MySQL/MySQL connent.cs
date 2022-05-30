@@ -596,11 +596,12 @@ namespace MySQL
                 return false;
             }
 
-            string mysqlStr = string.Format("select ord.Order_number as 订单号,des.Description_name as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(cou.sum,0) as {0}  " +
+            string mysqlStr = string.Format("select ord.Order_number as 订单号,des.Description_name as 品名,cus.Customer_name as 顾客名,ord.Total as 总数,ifnull(enqueue.sum,0) as 已请求,ifnull(cou.sum,0) as {0}  " +
                 "from order_table ord join description_table des on ord.Description_number=des.Description_number " +
                 "join customer_infor cus on des.Customer_number=cus.Customer_number " +
+                "join (select Order_number,Device_number,count(Order_number) as sum from enqueue group by Order_number) enqueue on ord.Order_number=enqueue.Order_number " +
                 "left join (select Order_number,sum(Count) as sum from {1} group by Order_number) cou " +
-                "on ord.Order_number=cou.Order_number where ord.{2}={3};",name, table, de_class, device.Device_number);
+                "on ord.Order_number=cou.Order_number where ord.{2}={3};", name, table, de_class, device.Device_number);
 
             Open();//打开通讯通道
             try

@@ -494,7 +494,7 @@ namespace B_stock
 
             MySQL.Select select = new Select();
             DataSet dataSet = new DataSet();
-            if (select.getQueue(nowDevice, "in", out dataSet))
+            if (select.takeOrders(nowDevice, "in", out dataSet))
             {
                 dataGridView1.DataSource = dataSet.Tables[0];
                 
